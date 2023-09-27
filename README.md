@@ -16,6 +16,7 @@ git push -uf origin main
 - [x] Each folder is a separate js file
 - [x] Common components are written in common.js
 - [x] Add Tabs by categories feature to News
+- [x] Loading
 - [ ] Build Post
 - [ ] Post details
 - [ ] Upload images to use on the Notes page
