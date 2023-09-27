@@ -85,6 +85,39 @@ body {
   font-size: 200%;
 }
 
+.c-tab {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 1rem 1rem 0 0;
+  overflow: hidden;
+
+  &__wrap {
+    max-width: 50rem;
+    margin: 4rem auto 0;
+  }
+
+  &__item {
+    width: calc(33.33333% - 1rem);
+    background: #ccc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 4rem;
+    font-size: 125%;
+    font-weight: bold;
+    outline: none;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+
+    &:hover,
+    &.active {
+      background: #000;
+      color: #fff;
+    }
+  }
+}
+
 .c-newsList {
   margin: 4rem 0;
   border-bottom: 1px dashed #ccc;
