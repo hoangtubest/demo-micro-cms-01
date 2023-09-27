@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Demo MicroCMS - JS</title>
+  <link rel="icon" href="./assets/images/common/favicon.png" type="image/x-icon" />
   <link rel="stylesheet" href="./assets/css/app.css">
 </head>
 
@@ -44,10 +45,82 @@
     <main class="main">
       <section id="news" class="news">
         <div class="container">
-          <h2 class="c-headline-lv2 js-effect">NEWS</h2>
+          <h2 class="c-headline-lv2 js-effect">お知らせ</h2>
           <div id="js-getNewsList"></div>
           <div class="btn">
-            <a href="./news/" class="btn__link">News 一覧</a>
+            <a href="./news/" class="btn__link">もっとみる</a>
+          </div>
+        </div>
+      </section>
+      <section id="column" class="column">
+        <div class="container">
+          <h2 class="c-headline-lv2 js-effect">お役立ちコラム</h2>
+          <div id="js-getColumnList">
+            <ol class="c-columnList">
+              <li class="c-columnList__item">
+                <a href="./column/post.html?id=insert-lists" class="c-card">
+                  <div class="c-card__inner">
+                    <div class="c-card__textContents">
+                      <h3 class="c-card__title">お知らせやコラム一覧を挿入したい</h3>
+                      <ul class="c-card__tagList">
+                        <li class="c-card__tag">カスタマイズ</li>
+                      </ul>
+                    </div>
+                    <figure class="c-card__image">
+                      <img src="https://images.microcms-assets.io/assets/3649ca4c219e401883022f9be8faf891/f5a2d7e26a2742339d72a84c20460619/img_16.png" alt="" width="1200" height="630">
+                    </figure>
+                  </div>
+                </a>
+              </li>
+              <li class="c-columnList__item">
+                <a href="./column/post.html?id=first-action" class="c-card">
+                  <div class="c-card__inner">
+                    <div class="c-card__textContents">
+                      <h3 class="c-card__title">開発を始める前に最初にやるとよいこと</h3>
+                      <ul class="c-card__tagList">
+                        <li class="c-card__tag">カスタマイズ</li>
+                      </ul>
+                    </div>
+                    <figure class="c-card__image">
+                      <img src="https://images.microcms-assets.io/assets/3649ca4c219e401883022f9be8faf891/b6f0527b881a44468ab79838b9ee1255/img_15.png" alt="" width="1200" height="630">
+                    </figure>
+                  </div>
+                </a>
+              </li>
+              <li class="c-columnList__item">
+                <a href="./column/post.html?id=setup-preview-mode" class="c-card">
+                  <div class="c-card__inner">
+                    <div class="c-card__textContents">
+                      <h3 class="c-card__title">下書きプレビューの設定をしよう</h3>
+                      <ul class="c-card__tagList">
+                        <li class="c-card__tag">カスタマイズ</li>
+                      </ul>
+                    </div>
+                    <figure class="c-card__image">
+                      <img src="https://images.microcms-assets.io/assets/3649ca4c219e401883022f9be8faf891/d170d4c81a714c72be3ebb7e7a40696d/img_17.png" alt="" width="1200" height="630">
+                    </figure>
+                  </div>
+                </a>
+              </li>
+              <li class="c-columnList__item">
+                <a href="./column/post.html?id=ogp-settings" class="c-card">
+                  <div class="c-card__inner">
+                    <div class="c-card__textContents">
+                      <h3 class="c-card__title">OGPを実装したい</h3>
+                      <ul class="c-card__tagList">
+                        <li class="c-card__tag">カスタマイズ</li>
+                      </ul>
+                    </div>
+                    <figure class="c-card__image">
+                      <img src="https://images.microcms-assets.io/assets/3649ca4c219e401883022f9be8faf891/a2ca6645eccb445d92092fda0150bb8c/img_14.png" alt="" width="1200" height="630">
+                    </figure>
+                  </div>
+                </a>
+              </li>
+            </ol>
+          </div>
+          <div class="btn">
+            <a href="./column/" class="btn__link">もっとみる</a>
           </div>
         </div>
       </section>

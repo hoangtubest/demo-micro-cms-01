@@ -1,3 +1,7 @@
+:root {
+  --color-background: #f3f3f3;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -18,6 +22,7 @@ a {
 img {
   max-width: 100%;
   height: auto;
+  vertical-align: bottom;
 }
 
 html {
@@ -159,8 +164,6 @@ body {
     }
   }
 
-
-
   @keyframes pulse {
 
     0%,
@@ -200,6 +203,8 @@ body {
 }
 
 .header {
+  // background: var(--color-background);
+
   &__inner {
     display: flex;
     justify-content: space-between;
@@ -233,19 +238,25 @@ body {
 
 .footer {
   text-align: center;
-  color: #fff;
-  background: #333;
+  background: var(--color-background);
   padding: 2rem 0;
 }
 
 .main {
-  padding: 7rem 0;
+  padding: 4rem 0;
 }
 
 .c-headline-lv2 {
   text-align: center;
   font-weight: bold;
   font-size: 200%;
+  margin-bottom: 5rem;
+}
+
+.news,
+.column,
+.notes {
+  padding: 4rem 0;
 }
 
 .c-tab {
@@ -279,10 +290,6 @@ body {
       color: #fff;
     }
   }
-}
-
-#js-getNewsList {
-  margin: 4rem 0;
 }
 
 .c-newsList {
@@ -405,5 +412,69 @@ body {
   &.is-show {
     opacity: 1;
     visibility: visible;
+  }
+}
+
+.c-columnList {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -1.5rem;
+
+  &__item {
+    width: 50%;
+    padding: 0 1.5rem;
+
+    &:nth-child(n+3) {
+      margin-top: 3rem;
+    }
+  }
+}
+
+.c-card {
+  display: block;
+  height: 100%;
+  background: var(--color-background);
+
+  &__inner {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+
+  &__textContents {
+    padding: 1.5rem;
+  }
+
+  &__title {
+    font-size: 120%;
+  }
+
+  &__tagList {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  &__tag {
+    margin-top: 0.5rem;
+    background: #333;
+    color: #fff;
+    padding: 0.4rem 1rem;
+    font-size: 80%;
+  }
+
+  &__image {
+    overflow: hidden;
+  }
+
+  img {
+    transition: 0.3s ease-in-out;
+  }
+
+  &:hover {
+    opacity: 0.7;
+
+    img {
+      transform: scale(1.05);
+    }
   }
 }
