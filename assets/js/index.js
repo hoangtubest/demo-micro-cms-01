@@ -1,2 +1,2 @@
-getNewsList(3);
-getColumnList(6);
+getNewsList(4);
+getColumnList(4);
