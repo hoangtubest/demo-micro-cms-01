@@ -20,7 +20,8 @@ git push -uf origin main
 - [x] Build Post
 - [x] Post details
 - [x] Post Category
-- [ ] Post Related
-- [ ] Upload images to use on the Notes page
+- [x] Post Related
+- [x] Upload images to use on the Notes page
+- [ ] Responsive
 
 ---

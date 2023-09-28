@@ -10,7 +10,7 @@ function getParameterByName(name, url) {
 
 var postId = getParameterByName("id");
 
-console.log(postId);
+// console.log(postId);
 
 var xhrPost = new XMLHttpRequest();
 var apiUrlBlogs = "https://ubyvb6y6u3.microcms.io/api/v1/blogs";
@@ -28,15 +28,16 @@ xhrPost.onreadystatechange = function () {
       // console.log("-----postData JSON----");
       postDataContent = postData.contents;
       var allPostItems = [...postDataContent];
-      console.log(allPostItems);
+      // console.log(allPostItems);
       var postItem = allPostItems.find(function (item) {
         return item.id === postId;
       });
 
-      console.log(postItem);
+      // console.log(postItem);
 
       if (postItem) {
         renderPostItems(postItem);
+        renderRelatedPosts(postItem, postDataContent);
       }
     } else {
       console.error("Error JSON:", xhrPost.status, xhrPost.statusText);
@@ -80,7 +81,53 @@ function renderPostItems(postItem) {
   getPostThumbnail.appendChild(postThumbnailImage);
 
   const getPostContent = document.querySelector("#js-post");
-  const getPostContentEditor = getPostContent.querySelector(".c-postEditor");
-  getPostContentEditor.innerHTML = "";
+  const getPostContentEditor = document.createElement("div");
+  getPostContentEditor.className = "c-postEditor";
   getPostContentEditor.innerHTML = postItem.content;
+  getPostContent.appendChild(getPostContentEditor);
+}
+
+function renderRelatedPosts(currentPost, allPosts) {
+  var relatedPosts = allPosts.filter(function (post) {
+    return (
+      post.category.id === currentPost.category.id && post.id !== currentPost.id
+    );
+  });
+
+  var relatedPostList = document.querySelector("#js-relatedPostList");
+  relatedPostList.innerHTML = "";
+
+  if (relatedPosts.length > 0) {
+    var relatedPostContainer = document.createElement("ul");
+    relatedPostContainer.className = "c-linkList";
+
+    relatedPosts.forEach(function (post) {
+      var relatedPostItem = document.createElement("li");
+      var relatedPostLink = document.createElement("a");
+      relatedPostLink.href = "./post.html?id=" + post.id;
+
+      var dl = document.createElement("dl");
+      var dt = document.createElement("dt");
+      var figure = document.createElement("figure");
+      const postRelatedImage = document.createElement("img");
+      postRelatedImage.src = post.eyecatch.url;
+      postRelatedImage.alt = post.title;
+      postRelatedImage.width = post.eyecatch.width;
+      postRelatedImage.height = post.eyecatch.height;
+      var dd = document.createElement("dd");
+      dd.textContent = post.title;
+
+      figure.appendChild(postRelatedImage);
+      dt.appendChild(figure);
+      dl.appendChild(dt);
+      dl.appendChild(dd);
+      relatedPostLink.appendChild(dl);
+      relatedPostItem.appendChild(relatedPostLink);
+      relatedPostContainer.appendChild(relatedPostItem);
+    });
+
+    relatedPostList.appendChild(relatedPostContainer);
+  } else {
+    relatedPostList.textContent = "関連する投稿はまだありません";
+  }
 }

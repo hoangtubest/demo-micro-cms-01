@@ -1,2 +1,2 @@
-getColumnList(100);
 getCategoryList();
+getColumnList(100);

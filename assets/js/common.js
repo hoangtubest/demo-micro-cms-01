@@ -1,3 +1,7 @@
+var currentURL = window.location.href;
+let buttonSwitchCategories;
+// console.log(currentURL);
+
 function formatDateToCustomFormat(dateString) {
   const date = new Date(dateString);
   const year = date.getFullYear();
@@ -91,12 +95,15 @@ if (document.getElementById("loading")) {
 function getNewsList(limit) {
   var allItems;
   var filteredItems;
-  var currentTab = "All";
-  var previousTab = "All";
+  var currentTab = "all";
+  var previousTab = "all";
   var xhrNews = new XMLHttpRequest();
-  var currentURL = window.location.href;
 
-  // console.log(currentURL);
+  const tabConditions = {
+    all: () => true,
+    notice: (item) => item.news_categories_01,
+    activities: (item) => item.news_categories_02,
+  };
 
   // var limit = currentURL.includes("/news/") ? 100 : 5;
 
@@ -135,106 +142,103 @@ function getNewsList(limit) {
   });
 
   function handleTabClick(event) {
-    tabButtons.forEach((tab) => {
-      tab.classList.remove("active");
-    });
-    event.target.classList.add("active");
-
     previousTab = currentTab;
-    currentTab = event.target.textContent;
+    currentTab = event.target.dataset.tab;
 
     if (previousTab !== currentTab) {
+      tabButtons.forEach((tab) => {
+        tab.classList.remove("active");
+      });
       event.target.classList.add("active");
 
-      if (currentTab === "All") {
-        filteredItems = allItems;
-      } else if (currentTab === "Notice") {
-        filteredItems = allItems.filter((item) => item.news_categories_01);
-      } else if (currentTab === "Activities") {
-        filteredItems = allItems.filter((item) => item.news_categories_02);
-      }
+      // if (currentTab === "all") {
+      //   filteredItems = allItems;
+      // } else if (currentTab === "notice") {
+      //   filteredItems = allItems.filter((item) => item.news_categories_01);
+      // } else if (currentTab === "activities") {
+      //   filteredItems = allItems.filter((item) => item.news_categories_02);
+      // }
+
+      filteredItems = allItems.filter((item) =>
+        tabConditions[currentTab](item)
+      );
 
       // console.log(filteredItems);
       renderNewsItems(filteredItems);
-    } else {
-      event.target.classList.add("active");
     }
   }
+}
 
-  function renderNewsItems(items) {
-    const getNewsList = document.querySelector("#js-getNewsList");
-    getNewsList.innerHTML = "";
-    const newsList = document.createElement("ol");
-    newsList.className = "c-newsList";
-    newsList.innerHTML = "";
+function renderNewsItems(items) {
+  const getNewsList = document.querySelector("#js-getNewsList");
+  getNewsList.innerHTML = "";
+  const newsList = document.createElement("ol");
+  newsList.className = "c-newsList";
+  newsList.innerHTML = "";
 
-    items.forEach((newsItem) => {
-      const listItem = document.createElement("li");
-      listItem.className = "c-newsList__item";
+  items.forEach((newsItem) => {
+    const listItem = document.createElement("li");
+    listItem.className = "c-newsList__item";
 
-      let contentElement;
-      if (newsItem.news_link) {
-        const link = document.createElement("a");
-        link.className = "c-newsList__contents";
-        link.href = newsItem.news_link;
+    let contentElement;
+    if (newsItem.news_link) {
+      const link = document.createElement("a");
+      link.className = "c-newsList__contents";
+      link.href = newsItem.news_link;
 
-        if (newsItem.news_link_target) {
-          link.setAttribute("target", "_blank");
-        }
-
-        contentElement = link;
-      } else {
-        contentElement = document.createElement("div");
-        contentElement.className = "c-newsList__contents";
+      if (newsItem.news_link_target) {
+        link.setAttribute("target", "_blank");
       }
 
-      const dl = document.createElement("dl");
+      contentElement = link;
+    } else {
+      contentElement = document.createElement("div");
+      contentElement.className = "c-newsList__contents";
+    }
 
-      const dt = document.createElement("dt");
-      dt.className = "c-newsList__head";
+    const dl = document.createElement("dl");
 
-      const time = document.createElement("time");
-      time.datetime = newsItem.news_time;
-      time.textContent = formatDateToCustomFormat(newsItem.news_time);
+    const dt = document.createElement("dt");
+    dt.className = "c-newsList__head";
 
-      const labelList = document.createElement("ul");
-      labelList.className = "c-newsList__label";
+    const time = document.createElement("time");
+    time.datetime = newsItem.news_time;
+    time.textContent = formatDateToCustomFormat(newsItem.news_time);
 
-      if (newsItem.news_categories_01) {
-        const categoryLi1 = document.createElement("li");
-        categoryLi1.textContent = "Notice";
-        labelList.appendChild(categoryLi1);
-      }
+    const labelList = document.createElement("ul");
+    labelList.className = "c-newsList__label";
 
-      if (newsItem.news_categories_02) {
-        const categoryLi2 = document.createElement("li");
-        categoryLi2.textContent = "Activities";
-        labelList.appendChild(categoryLi2);
-      }
+    if (newsItem.news_categories_01) {
+      const categoryLi1 = document.createElement("li");
+      categoryLi1.textContent = "Notice";
+      labelList.appendChild(categoryLi1);
+    }
 
-      const dd = document.createElement("dd");
-      dd.textContent = newsItem.news_title;
+    if (newsItem.news_categories_02) {
+      const categoryLi2 = document.createElement("li");
+      categoryLi2.textContent = "Activities";
+      labelList.appendChild(categoryLi2);
+    }
 
-      dt.appendChild(time);
-      dt.appendChild(labelList);
-      dl.appendChild(dt);
-      dl.appendChild(dd);
-      contentElement.appendChild(dl);
-      listItem.appendChild(contentElement);
-      newsList.appendChild(listItem);
-    });
+    const dd = document.createElement("dd");
+    dd.textContent = newsItem.news_title;
 
-    getNewsList.appendChild(newsList);
-  }
+    dt.appendChild(time);
+    dt.appendChild(labelList);
+    dl.appendChild(dt);
+    dl.appendChild(dd);
+    contentElement.appendChild(dl);
+    listItem.appendChild(contentElement);
+    newsList.appendChild(listItem);
+  });
+
+  getNewsList.appendChild(newsList);
 }
 
 function getColumnList(limit) {
   var allColumnItems;
   var filteredColumnItems;
   var xhrColumn = new XMLHttpRequest();
-  var currentURL = window.location.href;
-
-  // console.log(currentURL);
 
   // var limit = currentURL.includes("/column/") ? 100 : 6;
 
@@ -254,7 +258,7 @@ function getColumnList(limit) {
         // console.log("-----postData JSON----");
         columnDataContent = postData.contents;
         allColumnItems = [...columnDataContent];
-        console.log(allColumnItems);
+        // console.log(allColumnItems);
         renderColumnItems(allColumnItems);
       } else {
         const getColumnList = document.querySelector("#js-getColumnList");
@@ -266,110 +270,14 @@ function getColumnList(limit) {
   };
 
   xhrColumn.send();
-
-  // const tabButtons = document.querySelectorAll(".c-tab__item");
-  // tabButtons.forEach((tab) => {
-  //   tab.addEventListener("click", handleTabClick);
-  // });
-
-  function handleTabClick(event) {
-    tabButtons.forEach((tab) => {
-      tab.classList.remove("active");
-    });
-    event.target.classList.add("active");
-
-    previousTab = currentTab;
-    currentTab = event.target.textContent;
-
-    if (previousTab !== currentTab) {
-      event.target.classList.add("active");
-
-      if (currentTab === "All") {
-        filteredColumnItems = allColumnItems;
-      } else if (currentTab === "Notice") {
-        filteredColumnItems = allColumnItems.filter(
-          (item) => item.news_categories_01
-        );
-      } else if (currentTab === "Activities") {
-        filteredColumnItems = allColumnItems.filter(
-          (item) => item.news_categories_02
-        );
-      }
-
-      // console.log(filteredColumnItems);
-      renderItems(filteredColumnItems);
-    } else {
-      event.target.classList.add("active");
-    }
-  }
-
-  function renderColumnItems(items) {
-    const getColumnList = document.querySelector("#js-getColumnList");
-    getColumnList.innerHTML = "";
-    const columnList = document.createElement("ol");
-    columnList.className = "c-columnList";
-    columnList.innerHTML = "";
-
-    items.forEach((columnItem) => {
-      const listItem = document.createElement("li");
-      listItem.className = "c-columnList__item";
-
-      const linkCard = document.createElement("a");
-      linkCard.className = "c-card";
-
-      let cardUrl = currentURL.includes("/column/")
-        ? `./post.html?id=${columnItem.id}`
-        : `./column/post.html?id=${columnItem.id}`;
-      linkCard.href = cardUrl;
-
-      const cardInner = document.createElement("div");
-      cardInner.className = "c-card__inner";
-
-      const cardTextContents = document.createElement("div");
-      cardTextContents.className = "c-card__textContents";
-
-      const cardTitle = document.createElement("h3");
-      cardTitle.className = "c-card__title";
-      cardTitle.textContent = columnItem.title;
-
-      const cardTagList = document.createElement("ul");
-      cardTagList.className = "c-card__tagList";
-
-      const cardTag = document.createElement("li");
-      cardTag.className = "c-card__tag";
-      cardTag.textContent = columnItem.category.name;
-
-      const cardFigure = document.createElement("div");
-      cardFigure.className = "c-card__image";
-
-      const cardImage = document.createElement("img");
-      cardImage.src = columnItem.eyecatch.url;
-      cardImage.alt = columnItem.title;
-      cardImage.width = columnItem.eyecatch.width;
-      cardImage.height = columnItem.eyecatch.height;
-
-      cardTextContents.appendChild(cardTitle);
-      cardTagList.appendChild(cardTag);
-      cardTextContents.appendChild(cardTagList);
-      cardInner.appendChild(cardTextContents);
-      cardFigure.appendChild(cardImage);
-      cardInner.appendChild(cardFigure);
-      linkCard.appendChild(cardInner);
-      listItem.appendChild(linkCard);
-      columnList.appendChild(listItem);
-    });
-
-    getColumnList.appendChild(columnList);
-  }
 }
 
 function getCategoryList() {
   var allCategoryItems;
   var filteredCategoryItems;
+  var currentCategory = "all";
+  var previousCategory = "all";
   var xhrCategory = new XMLHttpRequest();
-  var currentURL = window.location.href;
-
-  // console.log(currentURL);
 
   // var limit = currentURL.includes("/column/") ? 100 : 6;
 
@@ -388,8 +296,14 @@ function getCategoryList() {
         // console.log("-----categoryData JSON----");
         categoryDataContent = categoryData.contents;
         allCategoryItems = [...categoryDataContent];
-        console.log(allCategoryItems);
+        // console.log(allCategoryItems);
         renderCategoryItems(allCategoryItems);
+        buttonSwitchCategories =
+          document.querySelectorAll(".js-switchCategory");
+
+        buttonSwitchCategories.forEach((btn) => {
+          btn.addEventListener("click", handleCategoryClick);
+        });
       } else {
         console.error(
           "Error JSON:",
@@ -402,56 +316,116 @@ function getCategoryList() {
 
   xhrCategory.send();
 
-  // const tabButtons = document.querySelectorAll(".c-tab__item");
-  // tabButtons.forEach((tab) => {
-  //   tab.addEventListener("click", handleCategoryClick);
-  // });
-
   function handleCategoryClick(event) {
-    tabButtons.forEach((tab) => {
-      tab.classList.remove("active");
-    });
-    event.target.classList.add("active");
-
-    previousTab = currentTab;
-    currentTab = event.target.textContent;
-
-    if (previousTab !== currentTab) {
+    previousCategory = currentCategory;
+    currentCategory = event.target.dataset.category;
+    if (previousCategory !== currentCategory) {
+      buttonSwitchCategories.forEach((btn) => {
+        btn.classList.remove("active");
+      });
       event.target.classList.add("active");
+      const allPosts = document.querySelectorAll(".c-columnList__item");
+      allPosts.forEach(function (post) {
+        const postCategory = post.dataset.category;
 
-      if (currentTab === "All") {
-        filteredCategoryItems = allCategoryItems;
-      } else if (currentTab === "Notice") {
-        filteredCategoryItems = allCategoryItems.filter(
-          (item) => item.news_categories_01
-        );
-      } else if (currentTab === "Activities") {
-        filteredCategoryItems = allCategoryItems.filter(
-          (item) => item.news_categories_02
-        );
-      }
-
-      // console.log(filteredCategoryItems);
-      renderItems(filteredCategoryItems);
-    } else {
-      event.target.classList.add("active");
+        if (currentCategory === "all" || postCategory === currentCategory) {
+          post.style.display = "block";
+        } else {
+          post.style.display = "none";
+        }
+      });
     }
   }
-
-  function renderCategoryItems(items) {
-    const getCategoryList = document.querySelector("#js-getCategoryList");
-    const getCategoryListUl = getCategoryList.querySelector(".c-linkList");
-
-    items.forEach((categoryItem) => {
-      const listItem = document.createElement("li");
-
-      const categoryButton = document.createElement("button");
-      categoryButton.className = `c-linkList__contents js-switchCategory`;
-      categoryButton.dataset.category = categoryItem.id;
-      categoryButton.textContent = categoryItem.name;
-
-      listItem.appendChild(categoryButton);
-      getCategoryListUl.appendChild(listItem);
-    });
-  }
 }
+
+function renderColumnItems(items) {
+  const getColumnList = document.querySelector("#js-getColumnList");
+  getColumnList.innerHTML = "";
+  const columnList = document.createElement("ol");
+  columnList.className = "c-columnList";
+  columnList.innerHTML = "";
+
+  items.forEach((columnItem) => {
+    const listItem = document.createElement("li");
+    listItem.className = "c-columnList__item";
+    listItem.dataset.category = columnItem.category.id;
+
+    const linkCard = document.createElement("a");
+    linkCard.className = "c-card";
+
+    let cardUrl = currentURL.includes("/column/")
+      ? `./post.html?id=${columnItem.id}`
+      : `./column/post.html?id=${columnItem.id}`;
+    linkCard.href = cardUrl;
+
+    const cardInner = document.createElement("div");
+    cardInner.className = "c-card__inner";
+
+    const cardTextContents = document.createElement("div");
+    cardTextContents.className = "c-card__textContents";
+
+    const cardTitle = document.createElement("h3");
+    cardTitle.className = "c-card__title";
+    cardTitle.textContent = columnItem.title;
+
+    const cardTagList = document.createElement("ul");
+    cardTagList.className = "c-card__tagList";
+
+    const cardTag = document.createElement("li");
+    cardTag.className = "c-card__tag";
+    cardTag.textContent = columnItem.category.name;
+
+    const cardFigure = document.createElement("div");
+    cardFigure.className = "c-card__image";
+
+    const cardImage = document.createElement("img");
+    cardImage.src = columnItem.eyecatch.url;
+    cardImage.alt = columnItem.title;
+    cardImage.width = columnItem.eyecatch.width;
+    cardImage.height = columnItem.eyecatch.height;
+
+    cardTextContents.appendChild(cardTitle);
+    cardTagList.appendChild(cardTag);
+    cardTextContents.appendChild(cardTagList);
+    cardInner.appendChild(cardTextContents);
+    cardFigure.appendChild(cardImage);
+    cardInner.appendChild(cardFigure);
+    linkCard.appendChild(cardInner);
+    listItem.appendChild(linkCard);
+    columnList.appendChild(listItem);
+  });
+
+  getColumnList.appendChild(columnList);
+}
+
+function renderCategoryItems(items) {
+  const getCategoryList = document.querySelector("#js-getCategoryList");
+  const getCategoryListUl = getCategoryList.querySelector(".c-linkList");
+
+  items.forEach((categoryItem) => {
+    const listItem = document.createElement("li");
+
+    const categoryButton = document.createElement("button");
+    categoryButton.className = `c-linkList__contents js-switchCategory`;
+    categoryButton.dataset.category = categoryItem.id;
+    categoryButton.textContent = categoryItem.name;
+
+    listItem.appendChild(categoryButton);
+    getCategoryListUl.appendChild(listItem);
+  });
+}
+
+// Fix cache
+function addTimestampToURL(url) {
+  return url + "?v=" + new Date().getTime();
+}
+
+const cssLinks = document.querySelectorAll('link[rel="stylesheet"]');
+cssLinks.forEach(function (link) {
+  link.href = addTimestampToURL(link.href);
+});
+
+const jsScripts = document.querySelectorAll("script[src]");
+jsScripts.forEach(function (script) {
+  script.src = addTimestampToURL(script.src);
+});
