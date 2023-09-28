@@ -420,12 +420,12 @@ function addTimestampToURL(url) {
   return url + "?v=" + new Date().getTime();
 }
 
-const cssLinks = document.querySelectorAll('link[rel="stylesheet"]');
-cssLinks.forEach(function (link) {
-  link.href = addTimestampToURL(link.href);
-});
+// const cssLinks = document.querySelectorAll('link[rel="stylesheet"]');
+// cssLinks.forEach(function (link) {
+//   link.href = addTimestampToURL(link.href);
+// });
 
-const jsScripts = document.querySelectorAll("script[src]");
-jsScripts.forEach(function (script) {
-  script.src = addTimestampToURL(script.src);
-});
+// const jsScripts = document.querySelectorAll("script[src]");
+// jsScripts.forEach(function (script) {
+//   script.src = addTimestampToURL(script.src);
+// });
