@@ -17,8 +17,10 @@ git push -uf origin main
 - [x] Common components are written in common.js
 - [x] Add Tabs by categories feature to News
 - [x] Loading
-- [ ] Build Post
-- [ ] Post details
+- [x] Build Post
+- [x] Post details
+- [x] Post Category
+- [ ] Post Related
 - [ ] Upload images to use on the Notes page
 
 ---

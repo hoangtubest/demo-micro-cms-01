@@ -46,12 +46,121 @@
       </div>
     </header>
     <main class="main">
-      <section id="news" class="news">
+      <section id="column" class="column">
         <div class="container">
           <h2 class="c-headline-lv2 js-effect">お役立ちコラム</h2>
-          <div id="js-getColumnList"></div>
+          <div class="p-columnPost">
+            <div class="l-row-sidebar">
+              <div class="p-columnPost__body">
+                <article>
+                  <div class="p-columnPostHeader">
+                    <div id="js-postCategory">
+                    </div>
+                    <h1 class="p-columnPostTitle" id="js-postTitle"></h1>
+                    <div class="p-columnPostDate">
+                      <p class="c-iconText">
+                        <img class="c-iconText__icon" src="../assets/images/common/icon_pen.svg" alt="投稿日" width="20" height="20">
+                        <span id="js-publishedDate"></span>
+                      </p>
+                      <p class="c-iconText">
+                        <img class="c-iconText__icon" src="../assets/images/common/icon_update.svg" alt="更新日" width="20" height="20">
+                        <span id="js-updatedDate"></span>
+                      </p>
+                    </div>
+                  </div>
+                  <div id="js-postThumbnail">
+                    <figure class="p-columnThumbnail">
+                      <img src="https://images.microcms-assets.io/assets/3649ca4c219e401883022f9be8faf891/9f95f218cab54683a08b4b63090c3118/img_1.png" alt="" width="1200" height="630">
+                    </figure>
+                  </div>
+                  <div class="c-post">
+                    <div id="js-post">
+                      <div class="c-postEditor">
+                        <p>コラムで使用できるパーツの紹介です。<br>入稿時やカスタマイズの参考にしてみてください。</p>
+                        <h2 id="h37fcf3653b">吹き出し</h2>
+                        <p>このパーツのmicroCMSでの設定は以下のようになります。</p>
+                        <figure><img src="https://images.microcms-assets.io/assets/3649ca4c219e401883022f9be8faf891/f0b4fa102606471eac63d08eb1131a1c/CleanShot%202023-07-02%20at%2023.56.56%402x.png" alt="" width="2038" height="1114"></figure>
+                        <p>設定項目はシンプルで<strong>ボタンテキスト</strong>と<strong>リンク先</strong>を入力して、<strong>新しいタブで開くかどうか</strong>を決めるだけです。</p>
+                        <p>こちらのスタイルシートは<code>/assets/css/component/button.css</code>です。</p>
+                        <h2 id="h0b57780c5b">チェックパネル</h2>
+                        <p>このパーツのmicroCMSでの設定は以下のようになります。</p>
+                        <figure><img src="https://images.microcms-assets.io/assets/3649ca4c219e401883022f9be8faf891/8597fabf16ee44e8bd055f81b3a13f54/CleanShot%202023-07-03%20at%2001.12.28%402x.png" alt="" width="2056" height="702"></figure>
+                        <p>こちらも<strong>見出し</strong>と<strong>本文</strong>を入れていくだけのシンプルな設定です。<br>スタイルシートは<code>/assets/css/component/check-pannel.css</code>になります。</p>
+                        <h2 id="haa0c73c64c">カルーセル（スライドショー）</h2>
+                        <h3 id="h1c1c9233e6">見出し</h3>
+                        <p>h1見出しは投稿のタイトルにあたるため、リッチエディタで設定できる見出しの範囲をh2〜h5に設定しています。<br>それぞれスタイルは以下のようになります。</p>
+                        <figure><img src="https://images.microcms-assets.io/assets/3649ca4c219e401883022f9be8faf891/b636b55fb023458c83d47da60e42323f/screenshot_editor_heading.png" alt="" width="1460" height="582">
+                          <figcaption>リッチエディタの見出しスタイル</figcaption>
+                        </figure>
+                        <h3 id="hb680612cc8">テーブル（表）</h3>
+                        <p>ヘッダーなし、ヘッダーあり、ヘッダー＋1列目ヘッダー（複合表）に対応しています。<br>ヘッダーがあればセル幅固定で横スクロールするようにスタイリングしているので、横長の表でも崩れず表示できます。</p>
+                        <figure><img src="https://images.microcms-assets.io/assets/3649ca4c219e401883022f9be8faf891/d261be2f15184fffb2c7efcdfa4b4ca1/screenshot_editor_table.png" alt="" width="1398" height="808">
+                          <figcaption>テーブルのスタイル</figcaption>
+                        </figure>
+                        <h3 id="hdf0456f9a2">引用</h3>
+                        <p>クォーテーション付きの囲みで表示します。<br>クォーテーション自体はsvg画像を使用しているので色の変更もファイルを直接変更することで可能です。</p>
+                        <p>色の変更は以下のファイル内のfill属性にカラーコードを指定するだけです。<br><code>/assets/images/icon_quote_left.svg</code><br><code>/assets/images/icon_quote_right.svg</code></p>
+                        <p>また、同じファイル名で置き換えるとクォーテーションの画像自体もお好きなものに変更できます。</p>
+                        <figure><img src="https://images.microcms-assets.io/assets/3649ca4c219e401883022f9be8faf891/afaf9942513a4c4185822374ba74b616/screenshot_editor_blockquote.png" alt="" width="1402" height="628">
+                          <figcaption>引用のスタイル</figcaption>
+                        </figure>
+                        <h3 id="h5c7cf48e04">コードブロック</h3>
+                        <p>ファイル名を入れると左上に表示します。<br>また、右上のアイコンを押すとコピーできるので、記事内でコードやコピーしてもらいたいテキストがあればコードブロックを使うのがおすすめです。</p>
+                        <p>本番公開時はURLがhttpsになっていないとコピー機能が動作しないのでご注意ください。</p>
+                        <figure><img src="https://images.microcms-assets.io/assets/3649ca4c219e401883022f9be8faf891/05e15826d697495ba16c4b417c8f6c78/CleanShot%202023-07-03%20at%2000.01.14%402x.png" alt="" width="1394" height="810">
+                          <figcaption>コードブロックのスタイル</figcaption>
+                        </figure>
+                        <h3 id="h4334dcd5e5">リスト</h3>
+                        <p>デフォルトのスタイルになっているので、必要に応じてスタイルをあててください。</p>
+                        <figure><img src="https://images.microcms-assets.io/assets/3649ca4c219e401883022f9be8faf891/66b84e1d6a554ddca6e0e981d6aec11d/screenshot_editor_list.png" alt="" width="600" height="406">
+                          <figcaption>リストのスタイル</figcaption>
+                        </figure>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              </div>
+              <aside class="c-sidebar">
+                <h2 class="c-sidebar__title">関連する記事</h2>
+                <div id="js-relatedPostList">
+                  <ul class="c-linkList">
+                    <li>
+                      <a href="../column/post.html?id=editor-styles">
+                        <dl>
+                          <dt>
+                            <figure><img src="https://images.microcms-assets.io/assets/72edb0453db14fbc9f5be83ba4e14032/358ced830a0c49e6a4b1e40c62e61f1c/img_07.png" alt="サイトを本番公開する" width="1200" height="630"></figure>
+                          </dt>
+                          <dd>リッチエディタのスタイル確認投稿</dd>
+                        </dl>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="../column/post.html?id=parts-list">
+                        <dl>
+                          <dt>
+                            <figure><img src="https://images.microcms-assets.io/assets/72edb0453db14fbc9f5be83ba4e14032/358ced830a0c49e6a4b1e40c62e61f1c/img_07.png" alt="サイトを本番公開する" width="1200" height="630"></figure>
+                          </dt>
+                          <dd>KANTAN! CMS STARTERで使えるパーツ集</dd>
+                        </dl>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="../column/post.html?id=parts-list">
+                        <dl>
+                          <dt>
+                            <figure><img src="https://images.microcms-assets.io/assets/72edb0453db14fbc9f5be83ba4e14032/358ced830a0c49e6a4b1e40c62e61f1c/img_07.png" alt="サイトを本番公開する" width="1200" height="630"></figure>
+                          </dt>
+                          <dd>KANTAN! CMS STARTERで使えるパーツ集</dd>
+                        </dl>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </aside>
+            </div>
+          </div>
           <div class="btn">
-            <a href="../" class="btn__link">Back Top</a>
+            <a href="../" class="btn__link">Column List</a>
           </div>
         </div>
       </section>
@@ -61,7 +170,7 @@
     </footer>
   </div>
   <script src="../assets/js/common.js"></script>
-  <script src="../assets/js/column.js"></script>
+  <script src="../assets/js/post.js"></script>
 </body>
 
 </html>

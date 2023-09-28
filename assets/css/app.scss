@@ -196,7 +196,7 @@ body {
 }
 
 .container {
-  max-width: 98rem;
+  max-width: 110rem;
   margin-left: auto;
   margin-right: auto;
   padding: 0 4rem;
@@ -294,6 +294,8 @@ body {
 
 .c-newsList {
   border-bottom: 1px dashed #ccc;
+  max-width: 70rem;
+  margin: 0 auto;
 
   &__item {
     border-top: 1px dashed #ccc;
@@ -392,6 +394,12 @@ body {
     padding: 1rem 2rem;
     width: 30rem;
     text-align: center;
+    transition: 0.3s ease-in-out;
+
+    &:hover {
+      background: #000;
+      color: #fff;
+    }
   }
 }
 
@@ -477,4 +485,216 @@ body {
       transform: scale(1.05);
     }
   }
+}
+
+.l-row-sidebar {
+  display: grid;
+  grid-template-columns: calc(100% - 30rem - 4rem) 30rem;
+  gap: 4rem;
+}
+
+.c-sidebar {
+  &__title {
+    font-size: 150%;
+    margin-bottom: 2rem;
+  }
+}
+
+.c-linkList {
+  display: grid;
+  gap: 1.5rem;
+
+  li {
+    &:nth-child(n+2) {
+      border-top: 1px dotted #ccc;
+      padding-top: 1.5rem;
+    }
+  }
+
+  dl {
+    display: flex;
+    align-items: center;
+
+    dt {
+      width: 15rem;
+      flex-shrink: 0;
+
+      figure {
+        overflow: hidden;
+
+        img {
+          transition: 0.3s ease-in-out;
+        }
+      }
+    }
+
+    dd {
+      flex-grow: 1;
+      padding-left: 1rem;
+      line-height: 1.4;
+    }
+  }
+
+  a {
+    display: block;
+
+    &:hover {
+      dl {
+        dt {
+          figure {
+            img {
+              transform: scale(1.05);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  &--underLine {
+    gap: 0;
+
+    li {
+      &:nth-child(n+2) {
+        border-top: none;
+      }
+    }
+  }
+
+  &__contents {
+    text-align: left;
+    display: block;
+    width: 100%;
+    font-size: 105%;
+    padding: 1.6rem calc(0.8rem + 2.4rem + 0.4rem) 1.6rem 1.6rem;
+    background-color: transparent;
+    border: 1px solid #333;
+    border-radius: 0.5rem;
+    position: relative;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+
+    &::after {
+      content: "";
+      display: inline-block;
+      width: 2.4rem;
+      height: 2.4rem;
+      background-image: url("../images/common/icon_arrow_right_black.svg");
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
+      position: absolute;
+      top: 50%;
+      right: 0.8rem;
+      transform: translateY(-50%);
+      transition: 0.3s ease-in-out;
+    }
+
+    &.active,
+    &:hover {
+      background: #333;
+      color: #fff;
+
+      &::after {
+        transform: translate(0.4rem, -50%);
+        background-image: url("../images/common/icon_arrow_right_white.svg");
+      }
+    }
+  }
+}
+
+.c-post {
+  .c-postEditor {
+    p {
+      margin-top: 0.5em;
+      margin-bottom: 1.5em;
+    }
+
+    h2 {
+      font-size: 172%;
+      line-height: 1.5;
+      margin-top: 2.5em;
+      margin-bottom: 1.5em;
+      padding: 0 0.6em 0.1em 0.6em;
+      border-left: 0.8rem solid #000;
+      border-bottom: 1px solid #000;
+    }
+
+    h3 {
+      font-size: 150%;
+      line-height: 1.5;
+      margin-top: 1.6em;
+      margin-bottom: 1.2em;
+      padding: 0 0 0.2em;
+      border-bottom: 1px solid #000;
+    }
+
+    figure {
+      margin-top: 4rem;
+      margin-bottom: 4rem;
+    }
+
+    figcaption {
+      font-size: 90%;
+      margin-top: 0.5em;
+    }
+  }
+}
+
+.p-columnPostCategories {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin: 0;
+  padding: 0;
+
+  li {
+    color: #fff;
+    display: inline-block;
+    line-height: 1;
+    padding: 0.8rem 1.6rem;
+    background-color: #000;
+    border-radius: 3rem;
+  }
+}
+
+.p-columnPostTitle {
+  font-size: 200%;
+  font-weight: 900;
+  line-height: 1.5;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 1.6rem;
+  margin-top: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+
+.p-columnPostDate {
+  display: flex;
+  gap: 2.4rem;
+}
+
+.c-iconText {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5em;
+
+  &__icon {
+    width: 1.25em;
+    height: 1.25em;
+  }
+
+  span {
+    font-size: 0.875em;
+  }
+}
+
+.p-columnPostHeader {
+  padding-bottom: 0.8rem;
+  margin-bottom: 4.8rem;
+}
+
+.c-post {
+  margin-top: 3em;
 }

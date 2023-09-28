@@ -100,10 +100,10 @@ function getNewsList(limit) {
 
   // var limit = currentURL.includes("/news/") ? 100 : 5;
 
-  var apiUrl = "https://ubyvb6y6u3.microcms.io/api/v1/news";
-  apiUrl = apiUrl + "?limit=" + limit;
+  var apiUrlNews = "https://ubyvb6y6u3.microcms.io/api/v1/news";
+  apiUrlNews = apiUrlNews + "?limit=" + limit;
 
-  xhrNews.open("GET", apiUrl, true);
+  xhrNews.open("GET", apiUrlNews, true);
   xhrNews.setRequestHeader(
     "X-MICROCMS-API-KEY",
     "dXpmSjPDgVsTH5iN1iKBp5J3Jp0BeHuNyWyp"
@@ -229,43 +229,43 @@ function getNewsList(limit) {
 }
 
 function getColumnList(limit) {
-  var allPostItems;
-  var filteredPostItems;
-  var xhrPost = new XMLHttpRequest();
+  var allColumnItems;
+  var filteredColumnItems;
+  var xhrColumn = new XMLHttpRequest();
   var currentURL = window.location.href;
 
   // console.log(currentURL);
 
   // var limit = currentURL.includes("/column/") ? 100 : 6;
 
-  var apiUrl = "https://ubyvb6y6u3.microcms.io/api/v1/blogs";
-  apiUrl = apiUrl + "?limit=" + limit;
+  var apiUrlBlogs = "https://ubyvb6y6u3.microcms.io/api/v1/blogs";
+  apiUrlBlogs = apiUrlBlogs + "?limit=" + limit;
 
-  xhrPost.open("GET", apiUrl, true);
-  xhrPost.setRequestHeader(
+  xhrColumn.open("GET", apiUrlBlogs, true);
+  xhrColumn.setRequestHeader(
     "X-MICROCMS-API-KEY",
     "dXpmSjPDgVsTH5iN1iKBp5J3Jp0BeHuNyWyp"
   );
 
-  xhrPost.onreadystatechange = function () {
-    if (xhrPost.readyState === 4) {
-      if (xhrPost.status === 200) {
-        postData = JSON.parse(xhrPost.responseText);
+  xhrColumn.onreadystatechange = function () {
+    if (xhrColumn.readyState === 4) {
+      if (xhrColumn.status === 200) {
+        postData = JSON.parse(xhrColumn.responseText);
         // console.log("-----postData JSON----");
-        postDataContent = postData.contents;
-        allPostItems = [...postDataContent];
-        console.log(allPostItems);
-        renderPostItems(allPostItems);
+        columnDataContent = postData.contents;
+        allColumnItems = [...columnDataContent];
+        console.log(allColumnItems);
+        renderColumnItems(allColumnItems);
       } else {
         const getColumnList = document.querySelector("#js-getColumnList");
         getColumnList.innerHTML =
           '<p class="u-text-center">まだお知らせがありません。</p>';
-        console.error("Error JSON:", xhrPost.status, xhrPost.statusText);
+        console.error("Error JSON:", xhrColumn.status, xhrColumn.statusText);
       }
     }
   };
 
-  xhrPost.send();
+  xhrColumn.send();
 
   // const tabButtons = document.querySelectorAll(".c-tab__item");
   // tabButtons.forEach((tab) => {
@@ -285,32 +285,32 @@ function getColumnList(limit) {
       event.target.classList.add("active");
 
       if (currentTab === "All") {
-        filteredPostItems = allPostItems;
+        filteredColumnItems = allColumnItems;
       } else if (currentTab === "Notice") {
-        filteredPostItems = allPostItems.filter(
+        filteredColumnItems = allColumnItems.filter(
           (item) => item.news_categories_01
         );
       } else if (currentTab === "Activities") {
-        filteredPostItems = allPostItems.filter(
+        filteredColumnItems = allColumnItems.filter(
           (item) => item.news_categories_02
         );
       }
 
-      // console.log(filteredPostItems);
-      renderItems(filteredPostItems);
+      // console.log(filteredColumnItems);
+      renderItems(filteredColumnItems);
     } else {
       event.target.classList.add("active");
     }
   }
 
-  function renderPostItems(items) {
+  function renderColumnItems(items) {
     const getColumnList = document.querySelector("#js-getColumnList");
     getColumnList.innerHTML = "";
     const columnList = document.createElement("ol");
     columnList.className = "c-columnList";
     columnList.innerHTML = "";
 
-    items.forEach((postItem) => {
+    items.forEach((columnItem) => {
       const listItem = document.createElement("li");
       listItem.className = "c-columnList__item";
 
@@ -318,8 +318,8 @@ function getColumnList(limit) {
       linkCard.className = "c-card";
 
       let cardUrl = currentURL.includes("/column/")
-        ? `./post.html?id=${postItem.id}`
-        : `./column/post.html?id=${postItem.id}`;
+        ? `./post.html?id=${columnItem.id}`
+        : `./column/post.html?id=${columnItem.id}`;
       linkCard.href = cardUrl;
 
       const cardInner = document.createElement("div");
@@ -330,23 +330,23 @@ function getColumnList(limit) {
 
       const cardTitle = document.createElement("h3");
       cardTitle.className = "c-card__title";
-      cardTitle.textContent = postItem.title;
+      cardTitle.textContent = columnItem.title;
 
       const cardTagList = document.createElement("ul");
       cardTagList.className = "c-card__tagList";
 
       const cardTag = document.createElement("li");
       cardTag.className = "c-card__tag";
-      cardTag.textContent = postItem.category.name;
+      cardTag.textContent = columnItem.category.name;
 
       const cardFigure = document.createElement("div");
       cardFigure.className = "c-card__image";
 
       const cardImage = document.createElement("img");
-      cardImage.src = postItem.eyecatch.url;
-      cardImage.alt = postItem.title;
-      cardImage.width = postItem.eyecatch.width;
-      cardImage.height = postItem.eyecatch.height;
+      cardImage.src = columnItem.eyecatch.url;
+      cardImage.alt = columnItem.title;
+      cardImage.width = columnItem.eyecatch.width;
+      cardImage.height = columnItem.eyecatch.height;
 
       cardTextContents.appendChild(cardTitle);
       cardTagList.appendChild(cardTag);
@@ -360,5 +360,98 @@ function getColumnList(limit) {
     });
 
     getColumnList.appendChild(columnList);
+  }
+}
+
+function getCategoryList() {
+  var allCategoryItems;
+  var filteredCategoryItems;
+  var xhrCategory = new XMLHttpRequest();
+  var currentURL = window.location.href;
+
+  // console.log(currentURL);
+
+  // var limit = currentURL.includes("/column/") ? 100 : 6;
+
+  var apiUrl = "https://ubyvb6y6u3.microcms.io/api/v1/categories";
+
+  xhrCategory.open("GET", apiUrl, true);
+  xhrCategory.setRequestHeader(
+    "X-MICROCMS-API-KEY",
+    "dXpmSjPDgVsTH5iN1iKBp5J3Jp0BeHuNyWyp"
+  );
+
+  xhrCategory.onreadystatechange = function () {
+    if (xhrCategory.readyState === 4) {
+      if (xhrCategory.status === 200) {
+        categoryData = JSON.parse(xhrCategory.responseText);
+        // console.log("-----categoryData JSON----");
+        categoryDataContent = categoryData.contents;
+        allCategoryItems = [...categoryDataContent];
+        console.log(allCategoryItems);
+        renderCategoryItems(allCategoryItems);
+      } else {
+        console.error(
+          "Error JSON:",
+          xhrCategory.status,
+          xhrCategory.statusText
+        );
+      }
+    }
+  };
+
+  xhrCategory.send();
+
+  // const tabButtons = document.querySelectorAll(".c-tab__item");
+  // tabButtons.forEach((tab) => {
+  //   tab.addEventListener("click", handleCategoryClick);
+  // });
+
+  function handleCategoryClick(event) {
+    tabButtons.forEach((tab) => {
+      tab.classList.remove("active");
+    });
+    event.target.classList.add("active");
+
+    previousTab = currentTab;
+    currentTab = event.target.textContent;
+
+    if (previousTab !== currentTab) {
+      event.target.classList.add("active");
+
+      if (currentTab === "All") {
+        filteredCategoryItems = allCategoryItems;
+      } else if (currentTab === "Notice") {
+        filteredCategoryItems = allCategoryItems.filter(
+          (item) => item.news_categories_01
+        );
+      } else if (currentTab === "Activities") {
+        filteredCategoryItems = allCategoryItems.filter(
+          (item) => item.news_categories_02
+        );
+      }
+
+      // console.log(filteredCategoryItems);
+      renderItems(filteredCategoryItems);
+    } else {
+      event.target.classList.add("active");
+    }
+  }
+
+  function renderCategoryItems(items) {
+    const getCategoryList = document.querySelector("#js-getCategoryList");
+    const getCategoryListUl = getCategoryList.querySelector(".c-linkList");
+
+    items.forEach((categoryItem) => {
+      const listItem = document.createElement("li");
+
+      const categoryButton = document.createElement("button");
+      categoryButton.className = `c-linkList__contents js-switchCategory`;
+      categoryButton.dataset.category = categoryItem.id;
+      categoryButton.textContent = categoryItem.name;
+
+      listItem.appendChild(categoryButton);
+      getCategoryListUl.appendChild(listItem);
+    });
   }
 }
