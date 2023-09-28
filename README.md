@@ -22,6 +22,7 @@ git push -uf origin main
 - [x] Post Category
 - [x] Post Related
 - [x] Upload images to use on the Notes page
-- [ ] Responsive
+- [x] Responsive
+- [ ] Load optimization
 
 ---
