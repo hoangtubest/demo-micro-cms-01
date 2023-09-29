@@ -42,8 +42,12 @@ function renderPostItems(postItem) {
   const postCategoryList = document.createElement("ul");
   postCategoryList.className = "p-columnPostCategories";
   const postCategoryItem = document.createElement("li");
-  postCategoryItem.textContent = postItem.category.name;
 
+  const postCategoryLink = document.createElement("a");
+  postCategoryLink.href = `./?category=${postItem.category.id}`;
+  postCategoryLink.textContent = postItem.category.name;
+
+  postCategoryItem.appendChild(postCategoryLink);
   postCategoryList.appendChild(postCategoryItem);
   getPostCategory.appendChild(postCategoryList);
 
@@ -82,6 +86,8 @@ function renderRelatedPosts(currentPost, allPosts) {
       post.category.id === currentPost.category.id && post.id !== currentPost.id
     );
   });
+
+  // console.log(relatedPosts);
 
   var relatedPostList = document.querySelector("#js-relatedPostList");
   relatedPostList.innerHTML = "";
