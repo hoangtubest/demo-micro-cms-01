@@ -1,8 +1,7 @@
+var categoryId = getParameterByName("category");
+
 function getCategoryList() {
   var allCategoryItems;
-  var filteredCategoryItems;
-  var currentCategory = "all";
-  var previousCategory = "all";
   var xhrCategory = new XMLHttpRequest();
 
   // var limit = currentURL.includes("/column/") ? 100 : 6;
@@ -23,13 +22,8 @@ function getCategoryList() {
         categoryDataContent = categoryData.contents;
         allCategoryItems = [...categoryDataContent];
         // console.log(allCategoryItems);
-        renderCategoryItems(allCategoryItems);
-        buttonSwitchCategories =
-          document.querySelectorAll(".js-switchCategory");
 
-        buttonSwitchCategories.forEach((btn) => {
-          btn.addEventListener("click", handleCategoryClick);
-        });
+        renderCategoryItems(allCategoryItems);
       } else {
         console.error(
           "Error JSON:",
@@ -41,27 +35,6 @@ function getCategoryList() {
   };
 
   xhrCategory.send();
-
-  function handleCategoryClick(event) {
-    previousCategory = currentCategory;
-    currentCategory = event.target.dataset.category;
-    if (previousCategory !== currentCategory) {
-      buttonSwitchCategories.forEach((btn) => {
-        btn.classList.remove("active");
-      });
-      event.target.classList.add("active");
-      const allPosts = document.querySelectorAll(".c-columnList__item");
-      allPosts.forEach(function (post) {
-        const postCategory = post.dataset.category;
-
-        if (currentCategory === "all" || postCategory === currentCategory) {
-          post.style.display = "block";
-        } else {
-          post.style.display = "none";
-        }
-      });
-    }
-  }
 }
 
 function renderCategoryItems(items) {
@@ -71,8 +44,9 @@ function renderCategoryItems(items) {
 
   const listItemFirst = document.createElement("li");
   const categoryLinkFirst = document.createElement("a");
-  categoryLinkFirst.className = `c-linkList__contents js-switchCategory active`;
+  categoryLinkFirst.className = `c-linkList__contents js-switchCategory`;
   categoryLinkFirst.href = `?category=all`;
+  categoryLinkFirst.dataset.category = "all";
   categoryLinkFirst.textContent = "すべて";
   listItemFirst.appendChild(categoryLinkFirst);
   getCategoryListUl.appendChild(listItemFirst);
@@ -83,10 +57,26 @@ function renderCategoryItems(items) {
     const categoryLink = document.createElement("a");
     categoryLink.className = `c-linkList__contents js-switchCategory`;
     categoryLink.href = `?category=${categoryItem.id}`;
+    categoryLink.dataset.category = categoryItem.id;
     categoryLink.textContent = categoryItem.name;
 
     listItem.appendChild(categoryLink);
     getCategoryListUl.appendChild(listItem);
+  });
+
+  // console.log(`category.id: ${categoryId}`);
+  const switchCategoryItems = document.querySelectorAll(".js-switchCategory");
+  switchCategoryItems.forEach((item) => {
+    const dataCategory = item.getAttribute("data-category");
+
+    if (
+      (categoryId === null || categoryId === "all") &&
+      dataCategory === "all"
+    ) {
+      item.classList.add("active");
+    } else if (dataCategory === categoryId) {
+      item.classList.add("active");
+    }
   });
 }
 

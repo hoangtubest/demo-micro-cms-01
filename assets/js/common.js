@@ -1,20 +1,12 @@
 let currentURL = window.location.href;
 // console.log(currentURL);
-let buttonSwitchCategories;
+
 let allColumnItems = [];
-let itemsPerPage = 10;
+let columnOfCategoryItems = [];
+let itemsPerPage = 6;
 let currentPage = 1;
 let previousPage = 1;
 let totalPages = 1;
-
-function formatDateToCustomFormat(dateString) {
-  const date = new Date(dateString);
-  const year = date.getFullYear();
-  const month = (date.getMonth() + 1).toString().padStart(2, "0");
-  const day = date.getDate().toString().padStart(2, "0");
-
-  return `${year}.${month}.${day}`;
-}
 
 function isElementInViewport(el) {
   var rect = el.getBoundingClientRect();
@@ -95,6 +87,25 @@ if (document.getElementById("loading")) {
   setTimeout(function () {
     Effect();
   }, 300);
+}
+
+function getParameterByName(name, url) {
+  if (!url) url = window.location.href;
+  name = name.replace(/[\[\]]/g, "\\$&");
+  var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+    results = regex.exec(url);
+  if (!results) return null;
+  if (!results[2]) return "";
+  return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+
+function formatDateToCustomFormat(dateString) {
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const day = date.getDate().toString().padStart(2, "0");
+
+  return `${year}.${month}.${day}`;
 }
 
 function getNewsList(limit) {
@@ -262,8 +273,24 @@ function getColumnList(limit) {
         columnDataContent = postData.contents;
         allColumnItems = [...columnDataContent];
         // console.log(allColumnItems);
-        totalPages = Math.ceil(allColumnItems.length / itemsPerPage);
-        renderPagination();
+
+        if (currentURL.includes("/column/")) {
+          columnOfCategoryItems = allColumnItems.filter(function (item) {
+            if (categoryId === null || categoryId === "all") {
+              return true;
+            } else {
+              return item.category.id === categoryId;
+            }
+          });
+
+          if (columnOfCategoryItems) {
+            // console.log(columnOfCategoryItems);
+            totalPages = Math.ceil(columnOfCategoryItems.length / itemsPerPage);
+            renderPagination();
+          }
+        } else {
+          renderColumnItems(allColumnItems);
+        }
       } else {
         const getColumnList = document.querySelector("#js-getColumnList");
         getColumnList.innerHTML =
@@ -339,7 +366,7 @@ function renderColumnItems(items) {
 function displayItemsOnPage(page) {
   const startIndex = (page - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const itemsOnPage = allColumnItems.slice(startIndex, endIndex);
+  const itemsOnPage = columnOfCategoryItems.slice(startIndex, endIndex);
   renderColumnItems(itemsOnPage);
 }
 
@@ -350,41 +377,98 @@ function renderPagination() {
   if (paginationColumn) {
     paginationColumn.innerHTML = "";
 
-    if (allColumnItems.length <= itemsPerPage) {
+    if (columnOfCategoryItems.length <= itemsPerPage) {
       paginationColumn.style.display = "none";
-    }
+    } else {
+      const hasPrev = currentPage > 1;
+      const hasNext = currentPage < totalPages;
 
-    for (let i = 1; i <= totalPages; i++) {
-      const button = document.createElement("button");
-      button.innerText = i;
-      button.dataset.page = i;
+      const prevButton = document.createElement("button");
+      prevButton.classList =
+        "pagination-column__item pagination-column__item--prev";
+      prevButton.innerText = "Prev";
+      prevButton.dataset.page = currentPage - 1;
 
-      if (i === currentPage) {
-        button.classList.add("active");
-      }
+      paginationColumn.appendChild(prevButton);
 
-      paginationColumn.appendChild(button);
-    }
+      for (let i = 1; i <= totalPages; i++) {
+        const button = document.createElement("button");
+        button.classList = "pagination-column__item";
+        button.innerText = i;
+        button.dataset.page = i;
 
-    const paginationButtons = document.querySelectorAll(
-      "#pagination-column button"
-    );
-
-    paginationButtons.forEach((button) => {
-      button.addEventListener("click", () => {
-        previousPage = currentPage;
-        currentPage = parseInt(button.dataset.page);
-
-        if (previousPage !== currentPage) {
-          displayItemsOnPage(currentPage);
-
-          paginationButtons.forEach((btn) => {
-            btn.classList.remove("active");
-          });
-
+        if (i === currentPage) {
           button.classList.add("active");
         }
+
+        paginationColumn.appendChild(button);
+      }
+
+      const nextButton = document.createElement("button");
+      nextButton.classList =
+        "pagination-column__item pagination-column__item--next";
+      nextButton.innerText = "Next";
+      nextButton.dataset.page = currentPage + 1;
+
+      paginationColumn.appendChild(nextButton);
+
+      const paginationButtons = document.querySelectorAll(
+        "#pagination-column button"
+      );
+
+      paginationButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          previousPage = currentPage;
+          currentPage = parseInt(button.dataset.page);
+
+          if (previousPage !== currentPage) {
+            displayItemsOnPage(currentPage);
+
+            paginationButtons.forEach((btn) => {
+              btn.classList.remove("active");
+            });
+
+            if (!isNaN(currentPage)) {
+              button.classList.add("active");
+            }
+
+            const newHasPrev = currentPage > 1;
+            const newHasNext = currentPage < totalPages;
+
+            if (newHasPrev) {
+              prevButton.style.display = "block";
+              prevButton.dataset.page = currentPage - 1;
+            } else {
+              prevButton.style.display = "none";
+            }
+
+            if (newHasNext) {
+              nextButton.style.display = "block";
+              nextButton.dataset.page = currentPage + 1;
+            } else {
+              nextButton.style.display = "none";
+            }
+
+            paginationButtons.forEach((btn) => {
+              if (btn.dataset.page === currentPage.toString()) {
+                btn.classList.add("active");
+              }
+            });
+          }
+        });
       });
-    });
+
+      if (hasPrev) {
+        prevButton.style.display = "block";
+      } else {
+        prevButton.style.display = "none";
+      }
+
+      if (hasNext) {
+        nextButton.style.display = "block";
+      } else {
+        nextButton.style.display = "none";
+      }
+    }
   }
 }

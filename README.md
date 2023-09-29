@@ -24,6 +24,5 @@ git push -uf origin main
 - [x] Upload images to use on the Notes page
 - [x] Responsive
 - [x] Column pagination
-- [ ] Load optimization
 
 ---

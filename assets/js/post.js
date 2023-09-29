@@ -1,16 +1,5 @@
-function getParameterByName(name, url) {
-  if (!url) url = window.location.href;
-  name = name.replace(/[\[\]]/g, "\\$&");
-  var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-    results = regex.exec(url);
-  if (!results) return null;
-  if (!results[2]) return "";
-  return decodeURIComponent(results[2].replace(/\+/g, " "));
-}
-
 var postId = getParameterByName("id");
-
-console.log(postId);
+// console.log(postId);
 
 var xhrPost = new XMLHttpRequest();
 var apiUrlBlogs = "https://ubyvb6y6u3.microcms.io/api/v1/blogs";
