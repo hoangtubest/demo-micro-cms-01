@@ -2,7 +2,7 @@ var postId = getParameterByName("id");
 // console.log(postId);
 
 var xhrPost = new XMLHttpRequest();
-var apiUrlBlogs = "https://ubyvb6y6u3.microcms.io/api/v1/blogs";
+var apiUrlBlogs = "https://ubyvb6y6u3.microcms.io/api/v1/blogs/?limit=100";
 
 xhrPost.open("GET", apiUrlBlogs, true);
 xhrPost.setRequestHeader(
