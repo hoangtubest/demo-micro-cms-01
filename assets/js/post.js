@@ -10,7 +10,7 @@ function getParameterByName(name, url) {
 
 var postId = getParameterByName("id");
 
-// console.log(postId);
+console.log(postId);
 
 var xhrPost = new XMLHttpRequest();
 var apiUrlBlogs = "https://ubyvb6y6u3.microcms.io/api/v1/blogs";

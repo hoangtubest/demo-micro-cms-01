@@ -1,6 +1,11 @@
-var currentURL = window.location.href;
-let buttonSwitchCategories;
+let currentURL = window.location.href;
 // console.log(currentURL);
+let buttonSwitchCategories;
+let allColumnItems = [];
+let itemsPerPage = 10;
+let currentPage = 1;
+let previousPage = 1;
+let totalPages = 1;
 
 function formatDateToCustomFormat(dateString) {
   const date = new Date(dateString);
@@ -236,8 +241,6 @@ function renderNewsItems(items) {
 }
 
 function getColumnList(limit) {
-  var allColumnItems;
-  var filteredColumnItems;
   var xhrColumn = new XMLHttpRequest();
 
   // var limit = currentURL.includes("/column/") ? 100 : 6;
@@ -259,7 +262,8 @@ function getColumnList(limit) {
         columnDataContent = postData.contents;
         allColumnItems = [...columnDataContent];
         // console.log(allColumnItems);
-        renderColumnItems(allColumnItems);
+        totalPages = Math.ceil(allColumnItems.length / itemsPerPage);
+        renderPagination();
       } else {
         const getColumnList = document.querySelector("#js-getColumnList");
         getColumnList.innerHTML =
@@ -270,72 +274,6 @@ function getColumnList(limit) {
   };
 
   xhrColumn.send();
-}
-
-function getCategoryList() {
-  var allCategoryItems;
-  var filteredCategoryItems;
-  var currentCategory = "all";
-  var previousCategory = "all";
-  var xhrCategory = new XMLHttpRequest();
-
-  // var limit = currentURL.includes("/column/") ? 100 : 6;
-
-  var apiUrl = "https://ubyvb6y6u3.microcms.io/api/v1/categories";
-
-  xhrCategory.open("GET", apiUrl, true);
-  xhrCategory.setRequestHeader(
-    "X-MICROCMS-API-KEY",
-    "dXpmSjPDgVsTH5iN1iKBp5J3Jp0BeHuNyWyp"
-  );
-
-  xhrCategory.onreadystatechange = function () {
-    if (xhrCategory.readyState === 4) {
-      if (xhrCategory.status === 200) {
-        categoryData = JSON.parse(xhrCategory.responseText);
-        // console.log("-----categoryData JSON----");
-        categoryDataContent = categoryData.contents;
-        allCategoryItems = [...categoryDataContent];
-        // console.log(allCategoryItems);
-        renderCategoryItems(allCategoryItems);
-        buttonSwitchCategories =
-          document.querySelectorAll(".js-switchCategory");
-
-        buttonSwitchCategories.forEach((btn) => {
-          btn.addEventListener("click", handleCategoryClick);
-        });
-      } else {
-        console.error(
-          "Error JSON:",
-          xhrCategory.status,
-          xhrCategory.statusText
-        );
-      }
-    }
-  };
-
-  xhrCategory.send();
-
-  function handleCategoryClick(event) {
-    previousCategory = currentCategory;
-    currentCategory = event.target.dataset.category;
-    if (previousCategory !== currentCategory) {
-      buttonSwitchCategories.forEach((btn) => {
-        btn.classList.remove("active");
-      });
-      event.target.classList.add("active");
-      const allPosts = document.querySelectorAll(".c-columnList__item");
-      allPosts.forEach(function (post) {
-        const postCategory = post.dataset.category;
-
-        if (currentCategory === "all" || postCategory === currentCategory) {
-          post.style.display = "block";
-        } else {
-          post.style.display = "none";
-        }
-      });
-    }
-  }
 }
 
 function renderColumnItems(items) {
@@ -398,34 +336,55 @@ function renderColumnItems(items) {
   getColumnList.appendChild(columnList);
 }
 
-function renderCategoryItems(items) {
-  const getCategoryList = document.querySelector("#js-getCategoryList");
-  const getCategoryListUl = getCategoryList.querySelector(".c-linkList");
-
-  items.forEach((categoryItem) => {
-    const listItem = document.createElement("li");
-
-    const categoryButton = document.createElement("button");
-    categoryButton.className = `c-linkList__contents js-switchCategory`;
-    categoryButton.dataset.category = categoryItem.id;
-    categoryButton.textContent = categoryItem.name;
-
-    listItem.appendChild(categoryButton);
-    getCategoryListUl.appendChild(listItem);
-  });
+function displayItemsOnPage(page) {
+  const startIndex = (page - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const itemsOnPage = allColumnItems.slice(startIndex, endIndex);
+  renderColumnItems(itemsOnPage);
 }
 
-// Fix cache
-function addTimestampToURL(url) {
-  return url + "?v=" + new Date().getTime();
+function renderPagination() {
+  displayItemsOnPage(currentPage);
+  const paginationColumn = document.querySelector("#pagination-column");
+
+  if (paginationColumn) {
+    paginationColumn.innerHTML = "";
+
+    if (allColumnItems.length <= itemsPerPage) {
+      paginationColumn.style.display = "none";
+    }
+
+    for (let i = 1; i <= totalPages; i++) {
+      const button = document.createElement("button");
+      button.innerText = i;
+      button.dataset.page = i;
+
+      if (i === currentPage) {
+        button.classList.add("active");
+      }
+
+      paginationColumn.appendChild(button);
+    }
+
+    const paginationButtons = document.querySelectorAll(
+      "#pagination-column button"
+    );
+
+    paginationButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        previousPage = currentPage;
+        currentPage = parseInt(button.dataset.page);
+
+        if (previousPage !== currentPage) {
+          displayItemsOnPage(currentPage);
+
+          paginationButtons.forEach((btn) => {
+            btn.classList.remove("active");
+          });
+
+          button.classList.add("active");
+        }
+      });
+    });
+  }
 }
-
-// const cssLinks = document.querySelectorAll('link[rel="stylesheet"]');
-// cssLinks.forEach(function (link) {
-//   link.href = addTimestampToURL(link.href);
-// });
-
-// const jsScripts = document.querySelectorAll("script[src]");
-// jsScripts.forEach(function (script) {
-//   script.src = addTimestampToURL(script.src);
-// });
