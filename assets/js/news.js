@@ -1,1 +1,1 @@
-getNewsList(100);
+getNewsList();

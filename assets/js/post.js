@@ -1,40 +1,29 @@
-var postId = getParameterByName("id");
+let postId = getParameterByName("id");
 // console.log(postId);
 
-var xhrPost = new XMLHttpRequest();
-var apiUrlBlogs = "https://ubyvb6y6u3.microcms.io/api/v1/blogs/?limit=100";
+function getPost(limitPost) {
+  const apiUrl = "blogs";
+  let limit = limitPost;
+  let allPostItems;
 
-xhrPost.open("GET", apiUrlBlogs, true);
-xhrPost.setRequestHeader(
-  "X-MICROCMS-API-KEY",
-  "dXpmSjPDgVsTH5iN1iKBp5J3Jp0BeHuNyWyp"
-);
+  function handleSuccess(data) {
+    // console.log("-----allPostItems JSON----");
+    allPostItems = [...data];
+    // console.log(allPostItems);
+    let postItem = allPostItems.find(function (item) {
+      return item.id === postId;
+    });
 
-xhrPost.onreadystatechange = function () {
-  if (xhrPost.readyState === 4) {
-    if (xhrPost.status === 200) {
-      postData = JSON.parse(xhrPost.responseText);
-      // console.log("-----postData JSON----");
-      postDataContent = postData.contents;
-      var allPostItems = [...postDataContent];
-      // console.log(allPostItems);
-      var postItem = allPostItems.find(function (item) {
-        return item.id === postId;
-      });
+    // console.log(postItem);
 
-      // console.log(postItem);
-
-      if (postItem) {
-        renderPostItems(postItem);
-        renderRelatedPosts(postItem, postDataContent);
-      }
-    } else {
-      console.error("Error JSON:", xhrPost.status, xhrPost.statusText);
+    if (postItem) {
+      renderPostItems(postItem);
+      renderRelatedPosts(postItem, allPostItems);
     }
   }
-};
 
-xhrPost.send();
+  callApi(apiUrl, limit, handleSuccess, handleError);
+}
 
 function renderPostItems(postItem) {
   const getPostCategory = document.querySelector("#js-postCategory");
@@ -81,7 +70,7 @@ function renderPostItems(postItem) {
 }
 
 function renderRelatedPosts(currentPost, allPosts) {
-  var relatedPosts = allPosts.filter(function (post) {
+  let relatedPosts = allPosts.filter(function (post) {
     return (
       post.category.id === currentPost.category.id && post.id !== currentPost.id
     );
@@ -89,27 +78,27 @@ function renderRelatedPosts(currentPost, allPosts) {
 
   // console.log(relatedPosts);
 
-  var relatedPostList = document.querySelector("#js-relatedPostList");
+  const relatedPostList = document.querySelector("#js-relatedPostList");
   relatedPostList.innerHTML = "";
 
   if (relatedPosts.length > 0) {
-    var relatedPostContainer = document.createElement("ul");
+    const relatedPostContainer = document.createElement("ul");
     relatedPostContainer.className = "c-linkList";
 
     relatedPosts.forEach(function (post) {
-      var relatedPostItem = document.createElement("li");
-      var relatedPostLink = document.createElement("a");
+      const relatedPostItem = document.createElement("li");
+      const relatedPostLink = document.createElement("a");
       relatedPostLink.href = "./post.html?id=" + post.id;
 
-      var dl = document.createElement("dl");
-      var dt = document.createElement("dt");
-      var figure = document.createElement("figure");
+      const dl = document.createElement("dl");
+      const dt = document.createElement("dt");
+      const figure = document.createElement("figure");
       const postRelatedImage = document.createElement("img");
       postRelatedImage.src = post.eyecatch.url;
       postRelatedImage.alt = post.title;
       postRelatedImage.width = post.eyecatch.width;
       postRelatedImage.height = post.eyecatch.height;
-      var dd = document.createElement("dd");
+      const dd = document.createElement("dd");
       dd.textContent = post.title;
 
       figure.appendChild(postRelatedImage);
@@ -126,3 +115,5 @@ function renderRelatedPosts(currentPost, allPosts) {
     relatedPostList.textContent = "関連する投稿はまだありません";
   }
 }
+
+getPost();

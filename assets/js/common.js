@@ -9,7 +9,7 @@ let previousPage = 1;
 let totalPages = 1;
 
 function isElementInViewport(el) {
-  var rect = el.getBoundingClientRect();
+  const rect = el.getBoundingClientRect();
 
   return (
     rect.top >= 0 &&
@@ -22,7 +22,7 @@ function isElementInViewport(el) {
 
 function Effect() {
   function handleScroll() {
-    var elements = document.querySelectorAll(".js-effect");
+    const elements = document.querySelectorAll(".js-effect");
 
     elements.forEach(function (element) {
       if (isElementInViewport(element)) {
@@ -38,8 +38,8 @@ function Effect() {
 }
 
 function onReady(callback) {
-  var loading = document.querySelector("#loading");
-  var promises = [];
+  const loading = document.querySelector("#loading");
+  let promises = [];
 
   function onResourceLoad() {
     loading.classList.add("loaded");
@@ -47,10 +47,10 @@ function onReady(callback) {
   }
 
   if (loading) {
-    var images = document.querySelectorAll("img");
-    for (var i = 0; i < images.length; i++) {
-      var promise = new Promise(function (resolve, reject) {
-        var image = images[i];
+    const images = document.querySelectorAll("img");
+    for (let i = 0; i < images.length; i++) {
+      let promise = new Promise(function (resolve, reject) {
+        const image = images[i];
         if (image.complete) {
           resolve();
         } else {
@@ -70,7 +70,7 @@ function onReady(callback) {
 }
 
 function setVisible(selector) {
-  var element = document.querySelector(selector);
+  const element = document.querySelector(selector);
   element.classList.add("loadHidden");
   setTimeout(function () {
     Effect();
@@ -92,7 +92,7 @@ if (document.getElementById("loading")) {
 function getParameterByName(name, url) {
   if (!url) url = window.location.href;
   name = name.replace(/[\[\]]/g, "\\$&");
-  var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+  const regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
     results = regex.exec(url);
   if (!results) return null;
   if (!results[2]) return "";
@@ -108,12 +108,42 @@ function formatDateToCustomFormat(dateString) {
   return `${year}.${month}.${day}`;
 }
 
-function getNewsList(limit) {
-  var allItems;
-  var filteredItems;
-  var currentTab = "all";
-  var previousTab = "all";
-  var xhrNews = new XMLHttpRequest();
+function callApi(apiUrl, limit = 100, successCallback, errorCallback) {
+  const xhr = new XMLHttpRequest();
+  apiUrl =
+    "https://ubyvb6y6u3.microcms.io/api/v1/" + apiUrl + "?limit=" + limit;
+  const apiKey = "dXpmSjPDgVsTH5iN1iKBp5J3Jp0BeHuNyWyp";
+
+  // console.log(apiUrl);
+
+  xhr.open("GET", apiUrl, true);
+  xhr.setRequestHeader("X-MICROCMS-API-KEY", apiKey);
+
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4) {
+      if (xhr.status === 200) {
+        const responseData = JSON.parse(xhr.responseText);
+        successCallback(responseData.contents);
+      } else {
+        errorCallback(xhr.status, xhr.statusText);
+      }
+    }
+  };
+
+  xhr.send();
+}
+
+function handleError(status, statusText) {
+  console.error("Error JSON:", status, statusText);
+}
+
+function getNewsList(limitNews) {
+  const apiUrl = "news";
+  let limit = limitNews;
+  let newsDataAll;
+  let filteredItems;
+  let currentTab = "all";
+  let previousTab = "all";
 
   const tabConditions = {
     all: () => true,
@@ -121,36 +151,21 @@ function getNewsList(limit) {
     activities: (item) => item.news_categories_02,
   };
 
-  // var limit = currentURL.includes("/news/") ? 100 : 5;
+  function handleSuccess(data) {
+    // console.log("-----newsDataAll JSON----");
+    newsDataAll = [...data];
+    // console.log(newsDataAll);
+    renderNewsItems(newsDataAll);
+  }
 
-  var apiUrlNews = "https://ubyvb6y6u3.microcms.io/api/v1/news";
-  apiUrlNews = apiUrlNews + "?limit=" + limit;
+  function handleError(status, statusText) {
+    const getColumnList = document.querySelector("#js-getNewsList");
+    getColumnList.innerHTML =
+      '<p class="u-text-center">まだお知らせがありません。</p>';
+    console.error("Error JSON:", status, statusText);
+  }
 
-  xhrNews.open("GET", apiUrlNews, true);
-  xhrNews.setRequestHeader(
-    "X-MICROCMS-API-KEY",
-    "dXpmSjPDgVsTH5iN1iKBp5J3Jp0BeHuNyWyp"
-  );
-
-  xhrNews.onreadystatechange = function () {
-    if (xhrNews.readyState === 4) {
-      if (xhrNews.status === 200) {
-        newsData = JSON.parse(xhrNews.responseText);
-        // console.log("-----newsData JSON----");
-        newsDataContent = newsData.contents;
-        allItems = [...newsDataContent];
-        // console.log(allItems);
-        renderNewsItems(allItems);
-      } else {
-        const getNewsList = document.querySelector("#js-getNewsList");
-        getNewsList.innerHTML =
-          '<p class="u-text-center">まだお知らせがありません。</p>';
-        console.error("Error JSON:", xhrNews.status, xhrNews.statusText);
-      }
-    }
-  };
-
-  xhrNews.send();
+  callApi(apiUrl, limit, handleSuccess, handleError);
 
   const tabButtons = document.querySelectorAll(".c-tab__item");
   tabButtons.forEach((tab) => {
@@ -168,14 +183,14 @@ function getNewsList(limit) {
       event.target.classList.add("active");
 
       // if (currentTab === "all") {
-      //   filteredItems = allItems;
+      //   filteredItems = newsDataAll;
       // } else if (currentTab === "notice") {
-      //   filteredItems = allItems.filter((item) => item.news_categories_01);
+      //   filteredItems = newsDataAll.filter((item) => item.news_categories_01);
       // } else if (currentTab === "activities") {
-      //   filteredItems = allItems.filter((item) => item.news_categories_02);
+      //   filteredItems = newsDataAll.filter((item) => item.news_categories_02);
       // }
 
-      filteredItems = allItems.filter((item) =>
+      filteredItems = newsDataAll.filter((item) =>
         tabConditions[currentTab](item)
       );
 
@@ -251,56 +266,41 @@ function renderNewsItems(items) {
   getNewsList.appendChild(newsList);
 }
 
-function getColumnList(limit) {
-  var xhrColumn = new XMLHttpRequest();
+function getColumnList(limitColumn) {
+  const apiUrl = "blogs";
+  let limit = limitColumn;
+  let columnDataAll;
 
-  // var limit = currentURL.includes("/column/") ? 100 : 6;
-
-  var apiUrlBlogs = "https://ubyvb6y6u3.microcms.io/api/v1/blogs";
-  apiUrlBlogs = apiUrlBlogs + "?limit=" + limit;
-
-  xhrColumn.open("GET", apiUrlBlogs, true);
-  xhrColumn.setRequestHeader(
-    "X-MICROCMS-API-KEY",
-    "dXpmSjPDgVsTH5iN1iKBp5J3Jp0BeHuNyWyp"
-  );
-
-  xhrColumn.onreadystatechange = function () {
-    if (xhrColumn.readyState === 4) {
-      if (xhrColumn.status === 200) {
-        postData = JSON.parse(xhrColumn.responseText);
-        // console.log("-----postData JSON----");
-        columnDataContent = postData.contents;
-        allColumnItems = [...columnDataContent];
-        // console.log(allColumnItems);
-
-        if (currentURL.includes("/column/")) {
-          columnOfCategoryItems = allColumnItems.filter(function (item) {
-            if (categoryId === null || categoryId === "all") {
-              return true;
-            } else {
-              return item.category.id === categoryId;
-            }
-          });
-
-          if (columnOfCategoryItems) {
-            // console.log(columnOfCategoryItems);
-            totalPages = Math.ceil(columnOfCategoryItems.length / itemsPerPage);
-            renderPagination();
-          }
+  function handleSuccess(data) {
+    // console.log("-----columnDataAll JSON----");
+    columnDataAll = [...data];
+    // console.log(columnDataAll);
+    if (currentURL.includes("/column/")) {
+      columnOfCategoryItems = columnDataAll.filter(function (item) {
+        if (categoryId === null || categoryId === "all") {
+          return true;
         } else {
-          renderColumnItems(allColumnItems);
+          return item.category.id === categoryId;
         }
-      } else {
-        const getColumnList = document.querySelector("#js-getColumnList");
-        getColumnList.innerHTML =
-          '<p class="u-text-center">まだお知らせがありません。</p>';
-        console.error("Error JSON:", xhrColumn.status, xhrColumn.statusText);
-      }
-    }
-  };
+      });
 
-  xhrColumn.send();
+      if (columnOfCategoryItems) {
+        totalPages = Math.ceil(columnOfCategoryItems.length / itemsPerPage);
+        renderPagination();
+      }
+    } else {
+      renderColumnItems(columnDataAll);
+    }
+  }
+
+  function handleError(status, statusText) {
+    const getColumnList = document.querySelector("#js-getColumnList");
+    getColumnList.innerHTML =
+      '<p class="u-text-center">まだお知らせがありません。</p>';
+    console.error("Error JSON:", status, statusText);
+  }
+
+  callApi(apiUrl, limit, handleSuccess, handleError);
 }
 
 function renderColumnItems(items) {

@@ -1,40 +1,19 @@
-var categoryId = getParameterByName("category");
+const categoryId = getParameterByName("category");
+// console.log(categoryId);
 
-function getCategoryList() {
-  var allCategoryItems;
-  var xhrCategory = new XMLHttpRequest();
+function getCategoryList(limitCategory) {
+  const apiUrl = "categories";
+  let limit = limitCategory;
+  let allCategoryItems;
 
-  // var limit = currentURL.includes("/column/") ? 100 : 6;
+  function handleSuccess(data) {
+    // console.log("-----allCategoryItems JSON----");
+    allCategoryItems = [...data];
+    // console.log(allCategoryItems);
+    renderCategoryItems(allCategoryItems);
+  }
 
-  var apiUrl = "https://ubyvb6y6u3.microcms.io/api/v1/categories";
-
-  xhrCategory.open("GET", apiUrl, true);
-  xhrCategory.setRequestHeader(
-    "X-MICROCMS-API-KEY",
-    "dXpmSjPDgVsTH5iN1iKBp5J3Jp0BeHuNyWyp"
-  );
-
-  xhrCategory.onreadystatechange = function () {
-    if (xhrCategory.readyState === 4) {
-      if (xhrCategory.status === 200) {
-        categoryData = JSON.parse(xhrCategory.responseText);
-        // console.log("-----categoryData JSON----");
-        categoryDataContent = categoryData.contents;
-        allCategoryItems = [...categoryDataContent];
-        // console.log(allCategoryItems);
-
-        renderCategoryItems(allCategoryItems);
-      } else {
-        console.error(
-          "Error JSON:",
-          xhrCategory.status,
-          xhrCategory.statusText
-        );
-      }
-    }
-  };
-
-  xhrCategory.send();
+  callApi(apiUrl, limit, handleSuccess, handleError);
 }
 
 function renderCategoryItems(items) {
@@ -81,4 +60,4 @@ function renderCategoryItems(items) {
 }
 
 getCategoryList();
-getColumnList(100);
+getColumnList();
