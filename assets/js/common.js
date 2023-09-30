@@ -420,6 +420,7 @@ function renderPagination() {
         button.addEventListener("click", () => {
           previousPage = currentPage;
           currentPage = parseInt(button.dataset.page);
+          let currentPageName = parseInt(button.textContent);
 
           if (previousPage !== currentPage) {
             displayItemsOnPage(currentPage);
@@ -428,7 +429,7 @@ function renderPagination() {
               btn.classList.remove("active");
             });
 
-            if (!isNaN(currentPage)) {
+            if (!isNaN(currentPageName)) {
               button.classList.add("active");
             }
 
@@ -454,6 +455,14 @@ function renderPagination() {
                 btn.classList.add("active");
               }
             });
+
+            const columnSectionId = document.querySelector("#column");
+
+            if (columnSectionId) {
+              columnSectionId.scrollIntoView({
+                behavior: "smooth",
+              });
+            }
           }
         });
       });
