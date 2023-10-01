@@ -9,6 +9,16 @@ git push -uf origin main
 
 ---
 
+JSON:
+
+curl "https://ubyvb6y6u3.microcms.io/api/v1/blogs" -H "X-MICROCMS-API-KEY:
+dXpmSjPDgVsTH5iN1iKBp5J3Jp0BeHuNyWyp"
+
+curl "https://ubyvb6y6u3.microcms.io/api/v1/categories" -H "X-MICROCMS-API-KEY: dXpmSjPDgVsTH5iN1iKBp5J3Jp0BeHuNyWyp"
+
+curl "https://ubyvb6y6u3.microcms.io/api/v1/news" -H "X-MICROCMS-API-KEY:
+dXpmSjPDgVsTH5iN1iKBp5J3Jp0BeHuNyWyp"
+
 ### Task
 
 - [x] News - top
