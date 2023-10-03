@@ -20,7 +20,7 @@ function isElementInViewport(el) {
   );
 }
 
-function Effect() {
+function applyScrollEffects() {
   function handleScroll() {
     const elements = document.querySelectorAll(".js-effect");
 
@@ -37,55 +37,75 @@ function Effect() {
   window.addEventListener("scroll", handleScroll);
 }
 
-function onReady(callback) {
-  const loading = document.querySelector("#loading");
-  let promises = [];
+function onLoad(callback) {
+  const loadingElement = document.querySelector("#loading");
+  let imagePromises = [];
 
-  function onResourceLoad() {
-    loading.classList.add("loaded");
-    Promise.all(promises).then(callback);
+  // if (loadingElement) {
+  //   const images = document.querySelectorAll("img");
+  //   for (let i = 0; i < images.length; i++) {
+  //     let promise = new Promise(function (resolve, reject) {
+  //       const image = images[i];
+  //       if (image.complete) {
+  //         resolve();
+  //       } else {
+  //         image.addEventListener("load", resolve);
+  //         image.addEventListener("error", reject);
+  //       }
+  //     });
+  //     imagePromises.push(promise);
+  //   }
+  // }
+
+  function onImageLoad(image) {
+    return new Promise(function (resolve, reject) {
+      if (image.complete) {
+        resolve();
+      } else {
+        image.addEventListener("load", resolve);
+        image.addEventListener("error", reject);
+      }
+    });
   }
 
-  if (loading) {
+  if (loadingElement) {
     const images = document.querySelectorAll("img");
-    for (let i = 0; i < images.length; i++) {
-      let promise = new Promise(function (resolve, reject) {
-        const image = images[i];
-        if (image.complete) {
-          resolve();
-        } else {
-          image.addEventListener("load", resolve);
-          image.addEventListener("error", reject);
-        }
-      });
-      promises.push(promise);
+    images.forEach(function (image) {
+      imagePromises.push(onImageLoad(image));
+    });
+  }
+
+  function onAllImagesLoaded() {
+    if (loadingElement) {
+      loadingElement.classList.add("loaded");
     }
+    Promise.all(imagePromises).then(callback);
   }
 
   if (document.readyState === "complete") {
-    onResourceLoad();
+    onAllImagesLoaded();
   } else {
-    window.addEventListener("load", onResourceLoad);
+    window.addEventListener("load", onAllImagesLoaded);
   }
 }
 
-function setVisible(selector) {
+function hideLoadingScreen(selector) {
   const element = document.querySelector(selector);
   element.classList.add("loadHidden");
   setTimeout(function () {
-    Effect();
+    applyScrollEffects();
     document.body.classList.remove("is-fixed");
   }, 300);
 }
 
 if (document.getElementById("loading")) {
   document.body.classList.add("is-fixed");
-  onReady(function () {
-    setVisible("#loading");
+  onLoad(function () {
+    hideLoadingScreen("#loading");
   });
 } else {
   setTimeout(function () {
-    Effect();
+    applyScrollEffects();
   }, 300);
 }
 
@@ -200,70 +220,114 @@ function getNewsList(limitNews) {
   }
 }
 
+// function renderNewsItems(items) {
+//   const getNewsList = document.querySelector("#js-getNewsList");
+//   getNewsList.innerHTML = "";
+//   const newsList = document.createElement("ol");
+//   newsList.className = "c-newsList";
+//   newsList.innerHTML = "";
+
+//   items.forEach((newsItem) => {
+//     const listItem = document.createElement("li");
+//     listItem.className = "c-newsList__item";
+
+//     let contentElement;
+//     if (newsItem.news_link) {
+//       const link = document.createElement("a");
+//       link.className = "c-newsList__contents";
+//       link.href = newsItem.news_link;
+
+//       if (newsItem.news_link_target) {
+//         link.setAttribute("target", "_blank");
+//       }
+
+//       contentElement = link;
+//     } else {
+//       contentElement = document.createElement("div");
+//       contentElement.className = "c-newsList__contents";
+//     }
+
+//     const dl = document.createElement("dl");
+
+//     const dt = document.createElement("dt");
+//     dt.className = "c-newsList__head";
+
+//     const time = document.createElement("time");
+//     time.datetime = newsItem.news_time;
+//     time.textContent = formatDateToCustomFormat(newsItem.news_time);
+
+//     const labelList = document.createElement("ul");
+//     labelList.className = "c-newsList__label";
+
+//     if (newsItem.news_categories_01) {
+//       const categoryLi1 = document.createElement("li");
+//       categoryLi1.textContent = "Notice";
+//       labelList.appendChild(categoryLi1);
+//     }
+
+//     if (newsItem.news_categories_02) {
+//       const categoryLi2 = document.createElement("li");
+//       categoryLi2.textContent = "Activities";
+//       labelList.appendChild(categoryLi2);
+//     }
+
+//     const dd = document.createElement("dd");
+//     dd.textContent = newsItem.news_title;
+
+//     dt.appendChild(time);
+//     dt.appendChild(labelList);
+//     dl.appendChild(dt);
+//     dl.appendChild(dd);
+//     contentElement.appendChild(dl);
+//     listItem.appendChild(contentElement);
+//     newsList.appendChild(listItem);
+//   });
+
+//   getNewsList.appendChild(newsList);
+// }
+
 function renderNewsItems(items) {
   const getNewsList = document.querySelector("#js-getNewsList");
   getNewsList.innerHTML = "";
-  const newsList = document.createElement("ol");
-  newsList.className = "c-newsList";
-  newsList.innerHTML = "";
 
-  items.forEach((newsItem) => {
-    const listItem = document.createElement("li");
-    listItem.className = "c-newsList__item";
+  const newsListHtml = `
+    <ol class="c-newsList">
+      ${items
+        .map((newsItem) => {
+          const contentElement = newsItem.news_link
+            ? `<a href="${newsItem.news_link}" class="c-newsList__contents" ${
+                newsItem.news_link_target ? 'target="_blank"' : ""
+              }>`
+            : `<div class="c-newsList__contents">`;
 
-    let contentElement;
-    if (newsItem.news_link) {
-      const link = document.createElement("a");
-      link.className = "c-newsList__contents";
-      link.href = newsItem.news_link;
+          const labelListHtml = `
+          <ul class="c-newsList__label">
+            ${newsItem.news_categories_01 ? "<li>Notice</li>" : ""}
+            ${newsItem.news_categories_02 ? "<li>Activities</li>" : ""}
+          </ul>
+        `;
 
-      if (newsItem.news_link_target) {
-        link.setAttribute("target", "_blank");
-      }
+          return `
+          <li class="c-newsList__item">
+            ${contentElement}
+              <dl>
+                <dt class="c-newsList__head">
+                  <time datetime="${
+                    newsItem.news_time
+                  }">${formatDateToCustomFormat(newsItem.news_time)}</time>
+                  ${labelListHtml}
+                </dt>
+                <dd>${newsItem.news_title}</dd>
+              </dl>
+            ${newsItem.news_link ? "</a>" : "</div>"}
+          </li>
+        `;
+        })
+        .join("")}
+    </ol>
+  `;
 
-      contentElement = link;
-    } else {
-      contentElement = document.createElement("div");
-      contentElement.className = "c-newsList__contents";
-    }
-
-    const dl = document.createElement("dl");
-
-    const dt = document.createElement("dt");
-    dt.className = "c-newsList__head";
-
-    const time = document.createElement("time");
-    time.datetime = newsItem.news_time;
-    time.textContent = formatDateToCustomFormat(newsItem.news_time);
-
-    const labelList = document.createElement("ul");
-    labelList.className = "c-newsList__label";
-
-    if (newsItem.news_categories_01) {
-      const categoryLi1 = document.createElement("li");
-      categoryLi1.textContent = "Notice";
-      labelList.appendChild(categoryLi1);
-    }
-
-    if (newsItem.news_categories_02) {
-      const categoryLi2 = document.createElement("li");
-      categoryLi2.textContent = "Activities";
-      labelList.appendChild(categoryLi2);
-    }
-
-    const dd = document.createElement("dd");
-    dd.textContent = newsItem.news_title;
-
-    dt.appendChild(time);
-    dt.appendChild(labelList);
-    dl.appendChild(dt);
-    dl.appendChild(dd);
-    contentElement.appendChild(dl);
-    listItem.appendChild(contentElement);
-    newsList.appendChild(listItem);
-  });
-
-  getNewsList.appendChild(newsList);
+  getNewsList.innerHTML = newsListHtml;
 }
 
 function getColumnList(limitColumn) {
@@ -303,64 +367,107 @@ function getColumnList(limitColumn) {
   callApi(apiUrl, limit, handleSuccess, handleError);
 }
 
+// function renderColumnItems(items) {
+//   const getColumnList = document.querySelector("#js-getColumnList");
+//   getColumnList.innerHTML = "";
+//   const columnList = document.createElement("ol");
+//   columnList.className = "c-columnList";
+//   columnList.innerHTML = "";
+
+//   items.forEach((columnItem) => {
+//     const listItem = document.createElement("li");
+//     listItem.className = "c-columnList__item";
+//     listItem.dataset.category = columnItem.category.id;
+
+//     const linkCard = document.createElement("a");
+//     linkCard.className = "c-card";
+
+//     let cardUrl = currentURL.includes("/column/")
+//       ? `./post.html?id=${columnItem.id}`
+//       : `./column/post.html?id=${columnItem.id}`;
+//     linkCard.href = cardUrl;
+
+//     const cardInner = document.createElement("div");
+//     cardInner.className = "c-card__inner";
+
+//     const cardTextContents = document.createElement("div");
+//     cardTextContents.className = "c-card__textContents";
+
+//     const cardTitle = document.createElement("h3");
+//     cardTitle.className = "c-card__title";
+//     cardTitle.textContent = columnItem.title;
+
+//     const cardTagList = document.createElement("ul");
+//     cardTagList.className = "c-card__tagList";
+
+//     const cardTag = document.createElement("li");
+//     cardTag.className = "c-card__tag";
+//     cardTag.textContent = columnItem.category.name;
+
+//     const cardFigure = document.createElement("div");
+//     cardFigure.className = "c-card__image";
+
+//     const cardImage = document.createElement("img");
+//     cardImage.src = columnItem.eyecatch.url;
+//     cardImage.alt = columnItem.title;
+//     cardImage.width = columnItem.eyecatch.width;
+//     cardImage.height = columnItem.eyecatch.height;
+
+//     cardTextContents.appendChild(cardTitle);
+//     cardTagList.appendChild(cardTag);
+//     cardTextContents.appendChild(cardTagList);
+//     cardInner.appendChild(cardTextContents);
+//     cardFigure.appendChild(cardImage);
+//     cardInner.appendChild(cardFigure);
+//     linkCard.appendChild(cardInner);
+//     listItem.appendChild(linkCard);
+//     columnList.appendChild(listItem);
+//   });
+
+//   getColumnList.appendChild(columnList);
+// }
+
 function renderColumnItems(items) {
   const getColumnList = document.querySelector("#js-getColumnList");
   getColumnList.innerHTML = "";
-  const columnList = document.createElement("ol");
-  columnList.className = "c-columnList";
-  columnList.innerHTML = "";
 
-  items.forEach((columnItem) => {
-    const listItem = document.createElement("li");
-    listItem.className = "c-columnList__item";
-    listItem.dataset.category = columnItem.category.id;
+  const columnListHtml = `
+    <ol class="c-columnList">
+      ${items
+        .map(
+          (columnItem) => `
+        <li class="c-columnList__item" data-category="${
+          columnItem.category.id
+        }">
+          <a href="${
+            currentURL.includes("/column/")
+              ? `./post.html?id=${columnItem.id}`
+              : `./column/post.html?id=${columnItem.id}`
+          }" class="c-card">
+            <div class="c-card__inner">
+              <div class="c-card__textContents">
+                <h3 class="c-card__title">${columnItem.title}</h3>
+                <ul class="c-card__tagList">
+                  <li class="c-card__tag">${columnItem.category.name}</li>
+                </ul>
+              </div>
+              <div class="c-card__image">
+                <img src="${columnItem.eyecatch.url}" alt="${
+            columnItem.title
+          }" width="${columnItem.eyecatch.width}" height="${
+            columnItem.eyecatch.height
+          }">
+              </div>
+            </div>
+          </a>
+        </li>
+      `
+        )
+        .join("")}
+    </ol>
+  `;
 
-    const linkCard = document.createElement("a");
-    linkCard.className = "c-card";
-
-    let cardUrl = currentURL.includes("/column/")
-      ? `./post.html?id=${columnItem.id}`
-      : `./column/post.html?id=${columnItem.id}`;
-    linkCard.href = cardUrl;
-
-    const cardInner = document.createElement("div");
-    cardInner.className = "c-card__inner";
-
-    const cardTextContents = document.createElement("div");
-    cardTextContents.className = "c-card__textContents";
-
-    const cardTitle = document.createElement("h3");
-    cardTitle.className = "c-card__title";
-    cardTitle.textContent = columnItem.title;
-
-    const cardTagList = document.createElement("ul");
-    cardTagList.className = "c-card__tagList";
-
-    const cardTag = document.createElement("li");
-    cardTag.className = "c-card__tag";
-    cardTag.textContent = columnItem.category.name;
-
-    const cardFigure = document.createElement("div");
-    cardFigure.className = "c-card__image";
-
-    const cardImage = document.createElement("img");
-    cardImage.src = columnItem.eyecatch.url;
-    cardImage.alt = columnItem.title;
-    cardImage.width = columnItem.eyecatch.width;
-    cardImage.height = columnItem.eyecatch.height;
-
-    cardTextContents.appendChild(cardTitle);
-    cardTagList.appendChild(cardTag);
-    cardTextContents.appendChild(cardTagList);
-    cardInner.appendChild(cardTextContents);
-    cardFigure.appendChild(cardImage);
-    cardInner.appendChild(cardFigure);
-    linkCard.appendChild(cardInner);
-    listItem.appendChild(linkCard);
-    columnList.appendChild(listItem);
-  });
-
-  getColumnList.appendChild(columnList);
+  getColumnList.innerHTML = columnListHtml;
 }
 
 function displayItemsOnPage(page) {
@@ -382,6 +489,25 @@ function renderPagination() {
     } else {
       const hasPrev = currentPage > 1;
       const hasNext = currentPage < totalPages;
+
+      // const paginationButtonsHtml = `
+      //   <button class="pagination-column__item pagination-column__item--prev" style="display: ${
+      //     hasPrev ? "block" : "none"
+      //   }" data-page="${currentPage - 1}">Prev</button>
+      //   ${Array.from(
+      //     { length: totalPages },
+      //     (_, i) => `
+      //     <button class="pagination-column__item ${
+      //       i + 1 === currentPage ? "active" : ""
+      //     }" data-page="${i + 1}">${i + 1}</button>
+      //   `
+      //   ).join("")}
+      //   <button class="pagination-column__item pagination-column__item--next" style="display: ${
+      //     hasNext ? "block" : "none"
+      //   }" data-page="${currentPage + 1}">Next</button>
+      // `;
+
+      // paginationColumn.innerHTML = paginationButtonsHtml;
 
       const prevButton = document.createElement("button");
       prevButton.classList =

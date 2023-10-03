@@ -784,7 +784,10 @@ body {
   }
 }
 
-
+pre {
+  width: 100%;
+  overflow-x: auto;
+}
 
 @media screen and (max-width: 768px) {
   html {
