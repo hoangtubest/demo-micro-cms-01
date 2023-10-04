@@ -150,8 +150,9 @@ function renderRelatedPosts(currentPost, allPosts) {
   if (relatedPosts.length > 0) {
     const relatedPostContainer = document.createElement("ul");
     relatedPostContainer.className = "c-linkList";
+    const maxRelatedPosts = 5;
 
-    relatedPosts.forEach((post) => {
+    relatedPosts.slice(0, maxRelatedPosts).forEach((post) => {
       const relatedPostItemHtml = `
         <li>
           <a href="./post.html?id=${post.id}">
